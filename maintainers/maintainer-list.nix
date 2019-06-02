@@ -1435,6 +1435,11 @@
     githubId = 23366017;
     name = "Dan Haraj";
   };
+  danielakhterov = {
+    email = "akhterovd@gamil.com";
+    github = "danielakhterov";
+    name = "Daniel Akhterov";
+  };
   danieldk = {
     email = "me@danieldk.eu";
     github = "danieldk";

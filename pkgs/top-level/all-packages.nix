@@ -8369,6 +8369,7 @@ in
   rustup = callPackage ../development/tools/rust/rustup {
     inherit (darwin.apple_sdk.frameworks) CoreServices Security;
   };
+  rusty-tags = callPackage ../development/tools/rust/rusty-tags { };
 
   sagittarius-scheme = callPackage ../development/compilers/sagittarius-scheme {};
 
