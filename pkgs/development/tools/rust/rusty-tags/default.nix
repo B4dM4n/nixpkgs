@@ -1,4 +1,4 @@
-{ lib, rustPlatform, fetchFromGitHub }:
+{ stdenv, lib, rustPlatform, fetchFromGitHub, darwin }:
 
 rustPlatform.buildRustPackage rec {
   pname = "rusty-tags";
@@ -12,6 +12,9 @@ rustPlatform.buildRustPackage rec {
   };
 
   cargoSha256 = "1llnlr2i1xncwm55c5sg0h6fyv9991xh8iw8acyfgi5a79ylcpb6";
+
+  buildInputs = lib.optionals stdenv.isDarwin
+    (with darwin.apple_sdk.frameworks; [ Security ]);
 
   meta = with lib; {
     description = "Create ctags/etags for a cargo project and all of its dependencies";
