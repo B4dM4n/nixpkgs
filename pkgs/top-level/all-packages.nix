@@ -22830,6 +22830,8 @@ in
 
   pistol = callPackage ../tools/misc/pistol { };
 
+  playscii = python3Packages.callPackage ../applications/graphics/playscii { };
+
   plexamp = callPackage ../applications/audio/plexamp { };
 
   plex-media-player = libsForQt512.callPackage ../applications/video/plex-media-player { };
