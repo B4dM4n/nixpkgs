@@ -3698,6 +3698,8 @@ in
     inherit (darwin.apple_sdk.frameworks) Security;
   };
 
+  rosie = callPackage ../tools/text/rosie { };
+
   grive2 = callPackage ../tools/filesystems/grive2 { };
 
   groff = callPackage ../tools/text/groff {
