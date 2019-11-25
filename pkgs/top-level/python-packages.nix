@@ -1203,6 +1203,8 @@ in {
 
   python-redis-lock = callPackage ../development/python-modules/python-redis-lock { };
 
+  python-rosie = callPackage ../development/python-modules/python-rosie { };
+
   python-sql = callPackage ../development/python-modules/python-sql { };
 
   python-snappy = callPackage ../development/python-modules/python-snappy {
