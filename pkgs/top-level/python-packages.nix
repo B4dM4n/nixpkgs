@@ -6214,6 +6214,10 @@ in {
 
   python-wifi = callPackage ../development/python-modules/python-wifi { };
 
+  python-xmlsec = callPackage ../development/python-modules/python-xmlsec {
+    inherit (pkgs) libxslt libxml2;
+  };
+
   python-xmp-toolkit = callPackage ../development/python-modules/python-xmp-toolkit { };
 
   pyeverlights = callPackage ../development/python-modules/pyeverlights { };
