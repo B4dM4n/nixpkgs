@@ -4817,6 +4817,10 @@ in {
 
   python-etcd = callPackage ../development/python-modules/python-etcd { };
 
+  python-xmlsec = callPackage ../development/python-modules/python-xmlsec {
+    inherit (pkgs) libxslt libxml2;
+  };
+
   pythonnet = callPackage ../development/python-modules/pythonnet {
     # `mono >= 4.6` required to prevent crashes encountered with earlier versions.
     mono = pkgs.mono4;
