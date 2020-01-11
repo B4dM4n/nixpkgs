@@ -18707,6 +18707,68 @@ let
     };
   };
 
+  SysInfo = buildPerlPackage rec {
+    pname = "Sys-Info";
+    version = "0.7811";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/B/BU/BURAK/${pname}-${version}.tar.gz";
+      sha256 = "1q81lkw1x04nxzym2lcjlb23drx88pcqwijmg66ijz22yfzq4r2n";
+    };
+    buildInputs = [ TestSysInfo ];
+    propagatedBuildInputs = [ SysInfoBase SysInfoDriverLinux SysInfoDriverUnknown ];
+    doCheck = false;
+    meta = {
+      homepage = "http://metacpan.org/release/Sys-Info";
+      description = "Extracts and collects information from the host system";
+      license = perl.meta.license;
+    };
+  };
+
+  SysInfoBase = buildPerlPackage rec {
+    pname = "Sys-Info-Base";
+    version = "0.7807";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/B/BU/BURAK/${pname}-${version}.tar.gz";
+      sha256 = "132362b0046e8dc4f12e1560903623a88a8871d09bf1c29d93d48d3f4a582acb";
+    };
+    propagatedBuildInputs = [ TextTemplateSimple ];
+    meta = {
+      description = "Base class for Sys::Info";
+      license = perl.meta.license;
+    };
+  };
+
+  SysInfoDriverLinux = buildPerlPackage rec {
+    pname = "Sys-Info-Driver-Linux";
+    version = "0.7905";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/B/BU/BURAK/${pname}-${version}.tar.gz";
+      sha256 = "899c329bd3508ec5849ad0e5dadfa7c3679bbacaea9dda12404a7893032e8b7b";
+    };
+    buildInputs = [ TestSysInfo ];
+    propagatedBuildInputs = [ ConfigGeneral SysInfoBase UnixProcessors ];
+    doCheck = false;
+    meta = {
+      description = "Linux driver for Sys::Info";
+      license = perl.meta.license;
+    };
+  };
+
+  SysInfoDriverUnknown = buildPerlPackage {
+    pname = "Sys-Info-Driver-Unknown";
+    version = "0.79";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/B/BU/BURAK/Sys-Info-Driver-Unknown-0.79.tar.gz";
+      sha256 = "02408843c8e36ea3d507e9f33fee48d6908543829ebe320f13d1bfe76af31e09";
+    };
+    buildInputs = [ TestSysInfo ];
+    propagatedBuildInputs = [ SysInfoBase ];
+    meta = {
+      description = "Compatibility layer for Sys::Info";
+      license = perl.meta.license;
+    };
+  };
+
   SysMmap = buildPerlPackage {
     pname = "Sys-Mmap";
     version = "0.20";
@@ -20553,6 +20615,19 @@ let
     };
   };
 
+  TestSysInfo = buildPerlPackage rec {
+    pname = "Test-Sys-Info";
+    version = "0.23";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/B/BU/BURAK/${pname}-${version}.tar.gz";
+      sha256 = "30c5f2c4cfee8e1ae6d9fb6291f79addbff5739ba4efa5b1e034520f18fbc95a";
+    };
+    meta = {
+      description = "Centralized test suite for Sys::Info";
+      license = perl.meta.license;
+    };
+  };
+
   TestTableDriven = buildPerlPackage {
     pname = "Test-TableDriven";
     version = "0.02";
@@ -21291,6 +21366,19 @@ let
     buildInputs = [ TestMoreUTF8 TestWarnings ];
   };
 
+  TextTemplateSimple = buildPerlPackage rec {
+    pname = "Text-Template-Simple";
+    version = "0.91";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/B/BU/BURAK/${pname}-${version}.tar.gz";
+      sha256 = "f5f6678e5487de9ae88c87296269d8a7d43eff72b289de00a0ebd64495e119ac";
+    };
+    meta = {
+      description = "Simple text template engine";
+      license = perl.meta.license;
+    };
+  };
+
   TestTrap = buildPerlModule {
     pname = "Test-Trap";
     version = "0.3.4";
@@ -22022,6 +22110,20 @@ let
     src = fetchurl {
       url = "mirror://cpan/authors/id/T/TA/TAFFY/Unix-Getrusage-0.03.tar.gz";
       sha256 = "76cde1cee2453260b85abbddc27cdc9875f01d2457e176e03dcabf05fb444d12";
+    };
+  };
+
+  UnixProcessors = buildPerlPackage {
+    pname = "Unix-Processors";
+    version = "2.046";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/W/WS/WSNYDER/Unix-Processors-2.046.tar.gz";
+      sha256 = "3973ebdc44682c9c15c776f66e8be242cb4ff1dd52caf43ff446b74d4dccca06";
+    };
+    meta = {
+      homepage = "http://www.veripool.org";
+      description = "Interface to processor (CPU) information";
+      license = perl.meta.license;
     };
   };
 

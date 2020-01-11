@@ -128,6 +128,8 @@ let
 
   git-open = callPackage ./git-open { };
 
+  git-pisect = callPackage ./git-pisect { };
+
   git-radar = callPackage ./git-radar { };
 
   git-recent = callPackage ./git-recent {
