@@ -7375,6 +7375,8 @@ in
 
   rarian = callPackage ../development/libraries/rarian { };
 
+  raritan-mpc = python3Packages.callPackage ../tools/admin/raritan-mpc {};
+
   ratools = callPackage ../tools/networking/ratools { };
 
   rawdog = callPackage ../applications/networking/feedreaders/rawdog { };
