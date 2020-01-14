@@ -1,0 +1,78 @@
+diff --git a/Makefile.include b/Makefile.include
+index 75e5fb7..6792af6 100644
+--- a/Makefile.include
++++ b/Makefile.include
+@@ -7,11 +7,11 @@ MKDIR       := mkdir -p
+ RM          := rm --force
+ RMDIR       := rm --force --recursive
+ 
+-TARGET_DIR    := $(DESTDIR)/usr/bin
+-TARGET_LIB    := $(DESTDIR)/usr/lib/rpmrebuild
+-TARGET_PLUGIN := $(DESTDIR)/usr/lib/rpmrebuild/plugins
+-TARGET_LOCALE := $(DESTDIR)/usr/lib/rpmrebuild/locale
+-TARGET_MAN    := $(DESTDIR)/usr/share/man
++TARGET_DIR    := $(DESTDIR)/bin
++TARGET_LIB    := $(DESTDIR)/lib/rpmrebuild
++TARGET_PLUGIN := $(DESTDIR)/lib/rpmrebuild/plugins
++TARGET_LOCALE := $(DESTDIR)/lib/rpmrebuild/locale
++TARGET_MAN    := $(DESTDIR)/share/man
+ 
+ # all languages (locale, man, plugins)
+ LANGS := en fr_FR fr_FR.UTF-8
+diff --git a/rpmrebuild b/rpmrebuild
+index 93d2ed3..b24b23d 100755
+--- a/rpmrebuild
++++ b/rpmrebuild
+@@ -17,4 +17,4 @@
+ #    GNU General Public License for more details.
+ #
+ ###############################################################################
+-${RPMREBUILD_ROOT_DIR:-/usr/lib/rpmrebuild}/rpmrebuild.sh $RPMREBUILD_OPTS "$@"
++${RPMREBUILD_ROOT_DIR:-@out@/lib/rpmrebuild}/rpmrebuild.sh $RPMREBUILD_OPTS "$@"
+diff --git a/rpmrebuild.sh b/rpmrebuild.sh
+index 87c0262..1d96437 100755
+--- a/rpmrebuild.sh
++++ b/rpmrebuild.sh
+@@ -121,7 +121,7 @@ function RpmUnpack
+ 	(cd $BUILDROOT && cpio --quiet -idmu ) < $CPIO_TEMP || return
+ 	rm --force $CPIO_TEMP                               || return
+ 	# Process ghost files
+-	/bin/bash $MY_LIB_DIR/rpmrebuild_ghost.sh $BUILDROOT < $FILES_IN || return
++	bash $MY_LIB_DIR/rpmrebuild_ghost.sh $BUILDROOT < $FILES_IN || return
+ 	return 0
+ }
+ ###############################################################################
+@@ -132,7 +132,7 @@ function CreateBuildRoot
+         if [ "x$package_flag" = "x" ]; then
+ 		# installed package
+ 		if [ "X$need_change_files" = "Xyes" ]; then
+-			/bin/bash $MY_LIB_DIR/rpmrebuild_buildroot.sh $BUILDROOT < $FILES_IN || return
++			bash $MY_LIB_DIR/rpmrebuild_buildroot.sh $BUILDROOT < $FILES_IN || return
+ 		else
+ 			: # Do nothing (avoid a copy)
+ 		fi
+@@ -183,9 +183,9 @@ function RpmBuild
+ 	# rpmrebuild package dependency
+ 	# for rpm 3.x : use rpm
+ 	# for rpm 4.x : use rpmbuild
+-	if [ -x /usr/bin/rpmbuild ]
++	if command -v rpmbuild >/dev/null 2>&1
+ 	then
+-		local BUILDCMD=/usr/bin/rpmbuild
++		local BUILDCMD=rpmbuild
+ 	else
+ 
+ 		local BUILDCMD=rpm
+diff --git a/spec_func.src b/spec_func.src
+index 5fcc75b..8ab6245 100755
+--- a/spec_func.src
++++ b/spec_func.src
+@@ -63,7 +63,7 @@ function spec_files
+ {
+ 	rm -f $FILES_IN || return
+ 	spec_query qf_spec_files > $FILES_IN || return
+-	/bin/bash $MY_LIB_DIR/rpmrebuild_files.sh < $FILES_IN || return
++	bash $MY_LIB_DIR/rpmrebuild_files.sh < $FILES_IN || return
+ 	return 0
+ }
+ 

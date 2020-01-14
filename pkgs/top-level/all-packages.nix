@@ -11416,6 +11416,8 @@ with pkgs;
 
   rpmextract = callPackage ../tools/archivers/rpmextract { };
 
+  rpmrebuild = callPackage ../tools/package-management/rpmrebuild { };
+
   rrdtool = callPackage ../tools/misc/rrdtool { };
 
   rscw = callPackage ../applications/radio/rscw { };
