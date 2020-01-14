@@ -7551,6 +7551,8 @@ in
 
   rpmextract = callPackage ../tools/archivers/rpmextract { };
 
+  rpmrebuild = callPackage ../tools/package-management/rpmrebuild { };
+
   rrdtool = callPackage ../tools/misc/rrdtool { };
 
   rshijack = callPackage ../tools/networking/rshijack { };
