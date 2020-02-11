@@ -25910,6 +25910,8 @@ in
 
   smokeping = callPackage ../tools/networking/smokeping { };
 
+  smokeping_prober = callPackage ../tools/networking/smokeping_prober { };
+
   snapraid = callPackage ../tools/filesystems/snapraid { };
 
   snscrape = with python3Packages; toPythonApplication snscrape;
