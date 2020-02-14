@@ -2,14 +2,14 @@
 
 stdenv.mkDerivation rec {
   pname = "playscii";
-  version = "0.9.14";
+  version = "9.16.2";
 
   src = fetchFromBitbucket {
     owner = "JPLeBreton";
     repo = pname;
     name = pname;
-    rev = "37a8634c4d33ab017a84d6333173442ae9386bcd";
-    sha256 = "0s3nqn8317y5gwjmc3b67jllahlf587kh370hgch98qxdqwz9r4b";
+    rev = "8d6597515d535e559cf65d5d02f0770ec9b2b9d0";
+    sha256 = "0vlj8fgblfnzixyrnj7jl7gknhrpcrl2li185778wbcx0k73cnyd";
   };
 
   preUnpack = ''
