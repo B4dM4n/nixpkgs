@@ -6823,6 +6823,8 @@ in {
     inherit (pkgs) pkg-config;
   };
 
+  seahub = callPackage ../development/python-modules/seahub { };
+
   seccomp = callPackage ../development/python-modules/seccomp { };
 
   secp256k1 = callPackage ../development/python-modules/secp256k1 { inherit (pkgs) secp256k1 pkgconfig; };
