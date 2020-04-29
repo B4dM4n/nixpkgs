@@ -97,6 +97,8 @@ python.pkgs.toPythonModule
 
     installPhase = ''
       cp -R . $out
+      mkdir -p $out/${python'.sitePackages}
+      ln -s $out/seahub $out/${python'.sitePackages}/seahub
     '';
 
     passthru.python = python'.withPackages (p: [ seahub ]);
