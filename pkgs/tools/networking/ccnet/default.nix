@@ -1,19 +1,33 @@
-{stdenv, fetchurl, which, autoreconfHook, pkgconfig, vala, python, libsearpc, libzdb, libuuid, libevent, sqlite, openssl}:
-
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, pkg-config
+, python
+, vala
+, which
+, libevent
+, libsearpc
+, libuuid
+, openssl
+, sqlite
+}:
 stdenv.mkDerivation rec {
   version = "6.1.8";
-  seafileVersion = "6.1.8";
   pname = "ccnet";
 
-  src = fetchurl {
-    url = "https://github.com/haiwen/ccnet/archive/v${version}.tar.gz";
-    sha256 = "0qlpnrz30ldrqnvbj59d54qdghxpxc5lsq6kf3dw2b93jnzkcmmm";
+  src = fetchFromGitHub {
+    owner = "haiwen";
+    repo = pname;
+    rev = "v${version}";
+    sha256 = "1zhin6iccy251ciqsk82ly25hg10iahc8jf6z50nkfsxa016ccqn";
   };
 
-  nativeBuildInputs = [ pkgconfig which autoreconfHook vala python ];
-  propagatedBuildInputs = [ libsearpc libzdb libuuid libevent sqlite openssl ];
+  outputs = [ "out" "lib" "dev" ];
 
-  configureFlags = [ "--enable-server" ];
+  nativeBuildInputs = [ pkg-config which autoreconfHook vala python ];
+  buildInputs = [ libsearpc libuuid libevent sqlite openssl ];
+
+  enableParallelBuilding = true;
 
   meta = with stdenv.lib; {
     homepage = "https://github.com/haiwen/ccnet";
