@@ -21624,6 +21624,8 @@ in
 
   seafile-client = libsForQt5.callPackage ../applications/networking/seafile-client { };
 
+  seafile-server = callPackage ../tools/networking/seafile-server { };
+
   seeks = callPackage ../tools/networking/p2p/seeks {
     protobuf = protobuf3_1;
   };
