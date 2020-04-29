@@ -6809,6 +6809,10 @@ in {
 
   seabreeze = callPackage ../development/python-modules/seabreeze { };
 
+  seafile-server = callPackage ../development/python-modules/seafile-server {
+    inherit (pkgs) libarchive pkgconfig fuse;
+  };
+
   seafile-shared = callPackage ../development/python-modules/seafile-shared {
     inherit (pkgs) pkg-config;
   };
