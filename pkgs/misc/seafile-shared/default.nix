@@ -1,4 +1,7 @@
 { stdenv, fetchFromGitHub, which, autoreconfHook, pkgconfig, vala, python, curl, libevent, libsearpc, sqlite, libuuid }:
+let
+  libsearpc' = libsearpc.override { inherit python; };
+in
 python.pkgs.toPythonModule
   (stdenv.mkDerivation rec {
     pname = "seafile-shared";
@@ -24,7 +27,7 @@ python.pkgs.toPythonModule
     buildInputs = [
       libuuid
       sqlite
-      libsearpc
+      libsearpc'
       libevent
       curl
     ];
@@ -33,7 +36,7 @@ python.pkgs.toPythonModule
 
     enableParallelBuilding = true;
 
-    pythonPath = [ libsearpc ];
+    pythonPath = [ libsearpc' ];
 
     postFixup = ''
       wrapPythonPrograms
