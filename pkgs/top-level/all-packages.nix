@@ -21626,6 +21626,8 @@ in
 
   seafile-server = callPackage ../tools/networking/seafile-server { };
 
+  seahub = callPackage ../misc/seahub { };
+
   seeks = callPackage ../tools/networking/p2p/seeks {
     protobuf = protobuf3_1;
   };
