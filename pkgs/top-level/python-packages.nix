@@ -1138,6 +1138,10 @@ in {
     inherit (pkgs) pkg-config;
   };
 
+  ccnet-server = callPackage ../development/python-modules/ccnet-server {
+    inherit (pkgs) pkg-config;
+  };
+
   cdecimal = callPackage ../development/python-modules/cdecimal { };
 
   celery = callPackage ../development/python-modules/celery { };
