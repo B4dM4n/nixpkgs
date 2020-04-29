@@ -69,6 +69,8 @@ python.pkgs.toPythonModule
 
     enableParallelBuilding = true;
 
+    passthru.scripts = callPackage ./scripts.nix { };
+
     meta = with stdenv.lib; {
       homepage = "https://github.com/haiwen/seafile-server";
       description = "Seafile Server Core";
