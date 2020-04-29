@@ -1,11 +1,7 @@
 { stdenv
 , fetchFromGitHub
 , autoreconfHook
-, ccnet
 , curl
-, fuse
-, glib
-, intltool
 , libevent
 , libsearpc
 , libuuid
@@ -13,9 +9,7 @@
 , python3
 , sqlite
 , vala
-, which
 }:
-
 stdenv.mkDerivation rec {
   pname = "seafile-shared";
   version = "8.0.1";
@@ -23,9 +17,11 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "haiwen";
     repo = "seafile";
-    rev = "d34499a2aafa024623a4210fe7f663cef13fe9a6";
+    rev = "v${version}";
     sha256 = "VKoGr3CTDFg3Q0X+MTlwa4BbfLB+28FeTyTJRCq37RA=";
   };
+
+  outputs = [ "out" "lib" "dev" ];
 
   nativeBuildInputs = [
     autoreconfHook
@@ -44,12 +40,12 @@ stdenv.mkDerivation rec {
   ];
 
   configureFlags = [
-    "--disable-server"
     "--disable-console"
-    "--with-python3"
   ];
 
-  pythonPath = with python3.pkgs; [
+  enableParallelBuilding = true;
+
+  pythonPath = [
     libsearpc
   ];
 

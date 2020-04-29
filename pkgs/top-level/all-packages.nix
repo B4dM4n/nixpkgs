@@ -28715,7 +28715,7 @@ in
   };
 
   seafile-shared = callPackage ../misc/seafile-shared {
-    inherit (python3Packages) ccnet libsearpc;
+    inherit (python3Packages) libsearpc;
    };
 
   ser2net = callPackage ../servers/ser2net {};
