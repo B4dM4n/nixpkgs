@@ -20,6 +20,9 @@
 }:
 
 with lib;
+let
+  libsearpc' = libsearpc.override { inherit python; };
+in
 python.pkgs.toPythonModule
   (stdenv.mkDerivation rec {
     version = "7.1.3";
@@ -44,7 +47,7 @@ python.pkgs.toPythonModule
     buildInputs = [
       glib
       libevent
-      libsearpc
+      libsearpc'
       libuuid
       openssl
       sqlite
