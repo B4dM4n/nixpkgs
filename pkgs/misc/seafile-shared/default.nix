@@ -1,5 +1,4 @@
-{stdenv, fetchFromGitHub, which, autoreconfHook, pkgconfig, vala, python2, curl, libevent, glib, libsearpc, sqlite, intltool, fuse, ccnet, libuuid }:
-
+{ stdenv, fetchFromGitHub, which, autoreconfHook, pkgconfig, vala, python, curl, libevent, libsearpc, sqlite, libuuid }:
 stdenv.mkDerivation rec {
   pname = "seafile-shared";
   version = "7.0.6";
@@ -11,12 +10,14 @@ stdenv.mkDerivation rec {
     sha256 = "0pc6xbwxljpj7h37za63kspdi90ap58x6x5b7hsmlhahblvlw0b8";
   };
 
+  outputs = [ "out" "lib" "dev" ];
+
   nativeBuildInputs = [
     autoreconfHook
     vala
     pkgconfig
-    python2
-    python2.pkgs.wrapPython
+    python
+    python.pkgs.wrapPython
   ];
 
   buildInputs = [
@@ -27,15 +28,11 @@ stdenv.mkDerivation rec {
     curl
   ];
 
-  configureFlags = [
-    "--disable-server"
-    "--disable-console"
-  ];
+  configureFlags = [ "--disable-console" ];
 
-  pythonPath = with python2.pkgs; [
-    future
-    libsearpc
-  ];
+  enableParallelBuilding = true;
+
+  pythonPath = [ libsearpc ];
 
   postFixup = ''
     wrapPythonPrograms
