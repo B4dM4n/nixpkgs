@@ -24,6 +24,10 @@
 }:
 
 with lib;
+let
+  ccnet-server' = ccnet-server.override { inherit python; };
+  libsearpc' = libsearpc.override { inherit python; };
+in
 python.pkgs.toPythonModule
   (stdenv.mkDerivation rec {
     version = "7.1.3";
@@ -46,13 +50,13 @@ python.pkgs.toPythonModule
       which
     ];
     buildInputs = [
-      ccnet-server
+      ccnet-server'
       fuse
       glib
       libarchive
       libevent
       libevhtp
-      libsearpc
+      libsearpc'
       libuuid
       openssl
       sqlite
