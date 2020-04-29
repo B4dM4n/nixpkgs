@@ -11,6 +11,9 @@
 , openssl
 , sqlite
 }:
+let
+  libsearpc' = libsearpc.override { inherit python; };
+in
 python.pkgs.toPythonModule
   (stdenv.mkDerivation rec {
     version = "6.1.8";
@@ -26,7 +29,7 @@ python.pkgs.toPythonModule
     outputs = [ "out" "lib" "dev" ];
 
     nativeBuildInputs = [ pkgconfig which autoreconfHook vala python ];
-    buildInputs = [ libsearpc libuuid libevent sqlite openssl ];
+    buildInputs = [ libsearpc' libuuid libevent sqlite openssl ];
 
     enableParallelBuilding = true;
 
