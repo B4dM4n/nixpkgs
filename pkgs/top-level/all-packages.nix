@@ -1435,6 +1435,8 @@ in
 
   ccnet = callPackage ../tools/networking/ccnet { };
 
+  ccnet-server = callPackage ../tools/networking/ccnet-server { };
+
   cassowary = callPackage ../tools/networking/cassowary { };
 
   croc = callPackage ../tools/networking/croc { };
