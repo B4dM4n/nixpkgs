@@ -6805,6 +6805,10 @@ in {
 
   seabreeze = callPackage ../development/python-modules/seabreeze { };
 
+  seafile-shared = callPackage ../development/python-modules/seafile-shared {
+    inherit (pkgs) pkg-config;
+  };
+
   seccomp = callPackage ../development/python-modules/seccomp { };
 
   secp256k1 = callPackage ../development/python-modules/secp256k1 { inherit (pkgs) secp256k1 pkgconfig; };

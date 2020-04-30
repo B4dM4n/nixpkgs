@@ -24232,7 +24232,7 @@ in
   scribusUnstable = libsForQt5.callPackage ../applications/office/scribus/unstable.nix { };
 
   seafile-client = libsForQt5.callPackage ../applications/networking/seafile-client {
-    inherit (pythonPackages) libsearpc;
+    inherit (pythonPackages) seafile-shared libsearpc;
   };
 
   sent = callPackage ../applications/misc/sent { };
@@ -28713,10 +28713,6 @@ in
   scylladb = callPackage ../servers/scylladb {
     thrift = thrift-0_10;
   };
-
-  seafile-shared = callPackage ../misc/seafile-shared {
-    inherit (python3Packages) libsearpc;
-   };
 
   ser2net = callPackage ../servers/ser2net {};
 

@@ -1,4 +1,5 @@
 { stdenv
+, buildPythonPackage
 , fetchFromGitHub
 , autoreconfHook
 , curl
@@ -6,11 +7,12 @@
 , libsearpc
 , libuuid
 , pkg-config
-, python3
 , sqlite
 , vala
+, wrapPython
 }:
-stdenv.mkDerivation rec {
+
+buildPythonPackage rec {
   pname = "seafile-shared";
   version = "8.0.1";
 
@@ -21,14 +23,14 @@ stdenv.mkDerivation rec {
     sha256 = "VKoGr3CTDFg3Q0X+MTlwa4BbfLB+28FeTyTJRCq37RA=";
   };
 
+  format = "other";
   outputs = [ "out" "lib" "dev" ];
 
   nativeBuildInputs = [
     autoreconfHook
     vala
     pkg-config
-    python3
-    python3.pkgs.wrapPython
+    wrapPython
   ];
 
   buildInputs = [
