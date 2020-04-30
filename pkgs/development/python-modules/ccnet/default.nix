@@ -1,8 +1,8 @@
 { stdenv
+, buildPythonPackage
 , fetchFromGitHub
 , autoreconfHook
 , pkg-config
-, python
 , vala
 , which
 , libevent
@@ -11,7 +11,8 @@
 , openssl
 , sqlite
 }:
-stdenv.mkDerivation rec {
+
+buildPythonPackage rec {
   version = "6.1.8";
   pname = "ccnet";
 
@@ -22,9 +23,10 @@ stdenv.mkDerivation rec {
     sha256 = "1zhin6iccy251ciqsk82ly25hg10iahc8jf6z50nkfsxa016ccqn";
   };
 
+  format = "other";
   outputs = [ "out" "lib" "dev" ];
 
-  nativeBuildInputs = [ pkg-config which autoreconfHook vala python ];
+  nativeBuildInputs = [ pkg-config which autoreconfHook vala libsearpc ];
   buildInputs = [ libsearpc libuuid libevent sqlite openssl ];
 
   enableParallelBuilding = true;

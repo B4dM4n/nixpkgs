@@ -1134,6 +1134,10 @@ in {
 
   CDDB = callPackage ../development/python-modules/cddb { };
 
+  ccnet = callPackage ../development/python-modules/ccnet {
+    inherit (pkgs) pkg-config;
+  };
+
   cdecimal = callPackage ../development/python-modules/cdecimal { };
 
   celery = callPackage ../development/python-modules/celery { };

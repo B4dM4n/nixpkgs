@@ -1784,10 +1784,6 @@ in
 
   cbor-diag = callPackage ../development/tools/cbor-diag { };
 
-  ccnet = callPackage ../tools/networking/ccnet {
-    inherit (pythonPackages) libsearpc;
-   };
-
   cassowary = callPackage ../tools/networking/cassowary { };
 
   croc = callPackage ../tools/networking/croc { };
@@ -28719,7 +28715,7 @@ in
   };
 
   seafile-shared = callPackage ../misc/seafile-shared {
-    inherit (python3Packages) libsearpc;
+    inherit (python3Packages) ccnet libsearpc;
    };
 
   ser2net = callPackage ../servers/ser2net {};
