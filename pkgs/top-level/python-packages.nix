@@ -3553,6 +3553,10 @@ in {
 
   libsavitar = callPackage ../development/python-modules/libsavitar { };
 
+  libsearpc = callPackage ../development/python-modules/libsearpc {
+    inherit (pkgs) pkg-config;
+  };
+
   libselinux = pipe pkgs.libselinux [
     toPythonModule
     (p:

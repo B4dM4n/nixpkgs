@@ -1784,7 +1784,9 @@ in
 
   cbor-diag = callPackage ../development/tools/cbor-diag { };
 
-  ccnet = callPackage ../tools/networking/ccnet { };
+  ccnet = callPackage ../tools/networking/ccnet {
+    inherit (pythonPackages) libsearpc;
+   };
 
   cassowary = callPackage ../tools/networking/cassowary { };
 
@@ -14835,8 +14837,6 @@ in
 
   libschrift = callPackage ../development/libraries/libschrift { };
 
-  libsearpc = callPackage ../development/libraries/libsearpc { };
-
   libsigcxx = callPackage ../development/libraries/libsigcxx { };
 
   libsigcxx12 = callPackage ../development/libraries/libsigcxx/1.2.nix { };
@@ -24235,7 +24235,9 @@ in
 
   scribusUnstable = libsForQt5.callPackage ../applications/office/scribus/unstable.nix { };
 
-  seafile-client = libsForQt5.callPackage ../applications/networking/seafile-client { };
+  seafile-client = libsForQt5.callPackage ../applications/networking/seafile-client {
+    inherit (pythonPackages) libsearpc;
+  };
 
   sent = callPackage ../applications/misc/sent { };
 
@@ -28716,7 +28718,9 @@ in
     thrift = thrift-0_10;
   };
 
-  seafile-shared = callPackage ../misc/seafile-shared { };
+  seafile-shared = callPackage ../misc/seafile-shared {
+    inherit (python3Packages) libsearpc;
+   };
 
   ser2net = callPackage ../servers/ser2net {};
 

@@ -1,6 +1,6 @@
-{ stdenv, fetchFromGitHub, autoreconfHook, pkg-config, libtool, python, glib, jansson }:
+{ stdenv, buildPythonPackage, fetchFromGitHub, autoreconfHook, pkg-config, libtool, glib, simplejson, jansson }:
 
-stdenv.mkDerivation rec {
+buildPythonPackage rec {
   version = "3.2.0";
   pname = "libsearpc";
 
@@ -11,13 +11,16 @@ stdenv.mkDerivation rec {
     sha256 = "18i5zvrp6dv6vygxx5nc93mai2p2x786n5lnf5avrin6xiz2j6hd";
   };
 
+  format = "other";
   outputs = [ "out" "lib" "dev" ];
 
   patches = [ ./libsearpc.pc.patch ];
 
-  nativeBuildInputs = [ autoreconfHook pkg-config python ];
-  buildInputs = [ libtool python.pkgs.simplejson ];
-  propagatedBuildInputs = [ glib jansson ];
+  nativeBuildInputs = [ autoreconfHook pkg-config ];
+  buildInputs = [ libtool ];
+  propagatedBuildInputs = [ simplejson glib jansson ];
+
+  dontWrapPythonPrograms = true;
 
   meta = with stdenv.lib; {
     homepage = "https://github.com/haiwen/libsearpc";
