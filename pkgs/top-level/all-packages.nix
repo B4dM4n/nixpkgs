@@ -20621,6 +20621,8 @@ in
 
   meh = callPackage ../applications/graphics/meh {};
 
+  mirage = python2Packages.callPackage ../applications/graphics/mirage { };
+
   mixxx = libsForQt5.callPackage ../applications/audio/mixxx { };
 
   mjpg-streamer = callPackage ../applications/video/mjpg-streamer { };
