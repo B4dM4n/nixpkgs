@@ -37,6 +37,7 @@ let
     "postfix"
     "postgres"
     "rspamd"
+    "smokeping"
     "snmp"
     "surfboard"
     "tor"

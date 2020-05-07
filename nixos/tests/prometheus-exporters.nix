@@ -19,6 +19,11 @@ let
  *  `exporterTest`
  *    this attribute set contains test instructions
  *
+ *  `testScript`
+ *    this attribute can be used as an alternative to `exporterTest`,
+ *    to provide a raw python script which does not get altered in
+ *    any way.
+ *
  *  `metricProvider` (optional)
  *    this attribute contains additional machine config
  *
@@ -431,6 +436,31 @@ let
       '';
     };
 
+    smokeping = {
+      exporterConfig = {
+        enable = true;
+        hosts = [ "localhost" ];
+      };
+      testScript = ''
+        def get_total():
+            return smokeping.succeed(
+                "curl -sSf http://localhost:9374/metrics | \
+                ${pkgs.ripgrep}/bin/rg -e '^smokeping_requests_total\{[^}]+\} (\d+)$' -r '$1'"
+            )
+
+
+        smokeping.start()
+        smokeping.wait_for_unit("prometheus-smokeping-exporter.service")
+        smokeping.wait_for_open_port(9374)
+        total_a = get_total()
+        smokeping.sleep(3)
+        total_b = get_total()
+        if int(total_b) <= int(total_a):
+            raise AssertionError
+        smokeping.shutdown()
+      '';
+    };
+
     surfboard = {
       exporterConfig = {
         enable = true;
@@ -536,7 +566,7 @@ mapAttrs (exporter: testConfig: (makeTest {
     services.prometheus.exporters.${exporter} = testConfig.exporterConfig;
   } testConfig.metricProvider or {}];
 
-  testScript = ''
+  testScript = testConfig.testScript or ''
     ${exporter}.start()
     ${concatStringsSep "\n" (map (line:
       if (builtins.substring 0 1 line == " " || builtins.substring 0 1 line == ")")
