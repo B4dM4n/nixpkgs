@@ -142,4 +142,35 @@ c = lib.makeOverridable f { a = 1; b = 2; };
    The variable <varname>c</varname> however also has some additional functions, like <link linkend="sec-pkg-override">c.override</link> which can be used to override the default arguments. In this example the value of <varname>(c.override { a = 4; }).result</varname> is 6.
   </para>
  </section>
+ <section xml:id="sec-lib-overrideWithSelf">
+  <title>lib.overrideWithSelf</title>
+
+  <para>
+   The function <varname>lib.overrideWithSelf</varname> is a helper to override functions which expect their own result a <varname>self</varname> argument.
+  </para>
+
+  <para>
+   Example usage:
+<programlisting>
+f = {self, a}: { result = a; passthru = self.result; };
+o = let self = lib.makeOverridable f { inherit self; a = 1; }; in self;
+     
+x = o.override { a = 10; }
+y = lib.overrideWithSelf o { a = 10; }
+</programlisting>
+  </para>
+
+  <para>
+   The variable <varname>o</varname> is a <link linkend="sec-lib-makeOverridable">overridable</link> attribute set built from the function <varname>f</varname>. The value of <varname>o.result</varname> and <varname>o.passthru</varname> is <literal>1</literal>, in this example.
+  </para>
+
+  <para>
+   Using <link linkend="sec-pkg-override">o.override</link> to change the value of <varname>a</varname> will only only update <varname>x.result</varname> to <literal>10</literal> in this example. The value of <varname>x.passthru</varname> is still <literal>1</literal>,
+   because the the <varname>self</varname> argument will still refer to the old result from the call of <varname>f</varname>.
+  </para>
+
+  <para>
+   To also update the <varname>self</varname> argument <varname>lib.overrideWithSelf</varname> can be used. This will update the recursive use of <varname>self</varname> and change the values of <varname>y.result</varname> and <varname>y.passthru</varname> both to <literal>10</literal> as expected, in this example.
+  </para>
+ </section>
 </chapter>

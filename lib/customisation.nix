@@ -92,6 +92,31 @@ rec {
         }
       else result;
 
+  /* `overrideWithSelf` takes a overridable attribute set which has a `self`
+     argument and an attribute set `args` that is passed to the `override`
+     function of `cur`.
+     The result of the `override` function is recursively passed as
+     `args.self` into the function and the fixed point of this returned.
+
+     nix-repl> f = {self, a}: { result = a; passthru = self.result; }
+     
+     nix-repl> x = let self = lib.makeOverridable f { inherit self; a = 1; }; in self
+     
+     nix-repl> x
+     { override = { ... }; overrideDerivation = «lambda»; passthru = 1; result = 1; }
+     
+     nix-repl> y = x.override { a = 10; }
+     
+     nix-repl> [ y.result y.passthru ]
+     [ 10 1 ]
+     
+     nix-repl> z = lib.overrideWithSelf x { a = 10; }
+     
+     nix-repl> [ z.result z.passthru ]
+     [ 10 10 ]
+  */
+  overrideWithSelf = cur: args: lib.fix
+    (self: cur.override (args // { inherit self; }));
 
   /* Call the package function in the file `fn' with the required
     arguments automatically.  The function is called with the
