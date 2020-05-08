@@ -133,6 +133,9 @@ stdenv.mkDerivation
         inherit (pkgs) requiredPerlModules;
       };
       withPackages = f: buildEnv.override { extraLibs = f pkgs; };
+      appendPackageOverrides = o: overrideWithSelf self {
+        packageOverrides = composeExtensions packageOverrides o;
+      };
     };
 
     doCheck = false; # some tests fail, expensive
