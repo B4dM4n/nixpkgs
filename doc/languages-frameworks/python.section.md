@@ -713,7 +713,7 @@ with import <nixpkgs> {};
         };
       });
     };
-  in pkgs.python3.override {inherit packageOverrides; self = python;};
+  in pkgs.python3.appendPackageOverrides packageOverrides;
 
 in python.withPackages(ps: [ps.blaze])).env
 ```

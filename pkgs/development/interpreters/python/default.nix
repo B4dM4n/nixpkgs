@@ -42,6 +42,9 @@ with pkgs;
         pythonAtLeast = lib.versionAtLeast pythonVersion;
         pythonOlder = lib.versionOlder pythonVersion;
         inherit hasDistutilsCxxPatch pythonForBuild;
+        appendPackageOverrides = o: lib.overrideWithSelf self {
+          packageOverrides = lib.composeExtensions packageOverrides o;
+        };
 
         tests = callPackage ./tests.nix {
           python = self;
