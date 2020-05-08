@@ -4,8 +4,8 @@
 }:
 
 let
-  python = python2.override {
-    packageOverrides = self: super: {
+  python = python2.appendPackageOverrides
+    (self: super: {
       # Older version, used by syncserver, tokenserver and serversyncstorage
       cornice = super.cornice.overridePythonAttrs (oldAttrs: rec {
         version = "0.17";
@@ -14,8 +14,7 @@ let
           sha256 = "1vvymhf6ydc885ygqiqpa39xr9v302i1l6nzirjnczqy9llyqvpj";
         };
       });
-    };
-  };
+    });
 
 # buildPythonPackage is necessary for syncserver to work with gunicorn or paster scripts
 in python.pkgs.buildPythonPackage rec {

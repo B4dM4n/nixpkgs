@@ -1,8 +1,8 @@
 { lib, python3, fetchFromGitHub }:
 
 let
-  python = python3.override {
-    packageOverrides = self: super: {
+  python = python3.appendPackageOverrides
+    (self: super: {
       bcrypt = super.bcrypt.overridePythonAttrs (oldAttrs: rec {
         version = "3.1.4";
         src = oldAttrs.src.override {
@@ -34,8 +34,7 @@ let
           sha256 = "0f390693f46173d8ffb95669acbb0e2a3ec54ecce676703510ad47f1a6d9dc83";
         };
       });
-    };
-  };
+    });
 
 in python.pkgs.buildPythonApplication rec {
   pname = "appdaemon";

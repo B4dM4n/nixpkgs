@@ -3,11 +3,10 @@
 let
   pio-pkgs = pkgs:
     let
-      python = pkgs.python3.override {
-        packageOverrides = self: super: {
+      python = pkgs.python3.appendPackageOverrides
+        (self: super: {
           platformio = self.callPackage ./core.nix { };
-        };
-      };
+        });
     in (with pkgs; [
       zlib
       git

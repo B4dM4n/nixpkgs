@@ -4,8 +4,8 @@
 }:
 
 let
-  py = python.override {
-    packageOverrides = self: super: {
+  py = python.appendPackageOverrides
+    (self: super: {
       pep8-naming = super.pep8-naming.overridePythonAttrs(oldAttrs: rec {
         version = "0.4.1";
         src = oldAttrs.src.override {
@@ -13,8 +13,7 @@ let
           sha256 = "0nhf8p37y008shd4f21bkj5pizv8q0l8cpagyyb8gr059d6gvvaf";
         };
       });
-    };
-  };
+    });
   setoptconf = py.pkgs.callPackage ./setoptconf.nix { };
 in
 

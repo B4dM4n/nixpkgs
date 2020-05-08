@@ -13,9 +13,8 @@ let
       });
     };
 
-  py = python3.override {
-    self = py;
-    packageOverrides = lib.foldr lib.composeExtensions (self: super: { }) ([
+  py = python3.appendPackageOverrides
+    (lib.foldr lib.composeExtensions (self: super: { }) ([
       (mkOverride "flask"       "0.12.5" "fac2b9d443e49f7e7358a444a3db5950bdd0324674d92ba67f8f1f15f876b14f")
       (mkOverride "flaskbabel"  "0.12.2" "11jwp8vvq1gnm31qh6ihy2h393hy18yn9yjp569g60r0wj1x2sii")
       (mkOverride "tornado"     "4.5.3"  "02jzd23l4r6fswmwxaica9ldlyc2p6q8dk6dyff7j58fmdzf853d")
@@ -102,6 +101,5 @@ let
       })
       (import ./plugins.nix {inherit pkgs;})
       packageOverrides
-    ]);
-  };
+    ]));
 in with py.pkgs; toPythonApplication octoprint

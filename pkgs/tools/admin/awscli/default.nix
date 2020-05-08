@@ -5,8 +5,8 @@
 }:
 
 let
-  py = python3.override {
-    packageOverrides = self: super: {
+  py = python3.appendPackageOverrides
+    (self: super: {
       rsa = super.rsa.overridePythonAttrs (oldAttrs: rec {
         version = "3.4.2";
         src = oldAttrs.src.override {
@@ -14,8 +14,7 @@ let
           sha256 = "25df4e10c263fb88b5ace923dd84bf9aa7f5019687b5e55382ffcdb8bede9db5";
         };
       });
-    };
-  };
+    });
 
 in with py.pkgs; buildPythonApplication rec {
   pname = "awscli";

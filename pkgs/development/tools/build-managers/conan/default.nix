@@ -12,8 +12,8 @@
 # in `postPatch` to allow newer versions when we know
 # (e.g. from changelogs) that they are compatible.
 
-let newPython = python3.override {
-  packageOverrides = self: super: {
+let newPython = python3.appendPackageOverrides
+  (self: super: {
     distro = super.distro.overridePythonAttrs (oldAttrs: rec {
       version = "1.1.0";
       src = oldAttrs.src.override {
@@ -35,8 +35,7 @@ let newPython = python3.override {
         sha256 = "c0abe3218b86533cca287e7057a37481883c07acef7814b70583406938214cc8";
       };
     });
-  };
-};
+  });
 
 in newPython.pkgs.buildPythonApplication rec {
   version = "1.25.0";

@@ -7,8 +7,8 @@
 }:
 let
 
-  py = python3.override {
-    packageOverrides = self: super: {
+  py = python3.appendPackageOverrides
+    (self: super: {
       # Can be unpinned once https://github.com/saltstack/salt/issues/56007 is resolved
       msgpack = super.msgpack.overridePythonAttrs (
         oldAttrs: rec {
@@ -19,8 +19,7 @@ let
           };
         }
       );
-    };
-  };
+    });
 
 in
 py.pkgs.buildPythonApplication rec {

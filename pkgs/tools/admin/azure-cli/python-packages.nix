@@ -39,8 +39,8 @@ let
       pythonNamespaces = [ "azure.mgmt" ];
     });
 
-  py = python.override {
-    packageOverrides = self: super: {
+  py = python.appendPackageOverrides
+    (self: super: {
       inherit buildAzureCliPackage;
 
       # core and the actual application are highly coupled
@@ -321,7 +321,6 @@ let
         };
       });
 
-    };
-  };
+    });
 in
   py

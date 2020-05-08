@@ -1,8 +1,8 @@
 { stdenv, fetchFromGitHub, python
 , unzip, makeWrapper }:
 let
-  python' = python.override {
-    packageOverrides = self: super: {
+  python' = python.appendPackageOverrides
+    (self: super: {
       docker = self.buildPythonPackage rec {
         name = "docker-${version}";
         version = "1.10.6";
@@ -35,8 +35,7 @@ let
           sha256 = "912516ac6a355d7624374a38337b8587afe3eb535c0a5456b3bd12df637a6e70";
         };
       });
-    };
-  };
+    });
 
 in stdenv.mkDerivation rec {
   version = "5.11.2";

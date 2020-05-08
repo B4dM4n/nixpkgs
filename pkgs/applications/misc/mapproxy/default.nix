@@ -3,8 +3,8 @@
 , python
 }:
 let
-  py = python.override {
-    packageOverrides = self: super: {
+  py = python.appendPackageOverrides
+    (self: super: {
       pyproj = super.pyproj.overridePythonAttrs (oldAttrs: rec {
       version = "1.9.6";
       src = pkgs.fetchFromGitHub {
@@ -23,8 +23,7 @@ let
         runHook postCheck
       '';
       });
-    };
-  };
+    });
 in
 with py.pkgs;
 buildPythonApplication rec {

@@ -25,7 +25,7 @@ let
         patches = [];
       });
     };
-    in python3.override { inherit packageOverrides; };
+    in python3.appendPackageOverrides packageOverrides;
   pythonEnv = python.withPackages (ps: with ps; [
     pyqt5 docutils pyenchant Markups markdown pygments chardet
   ]);

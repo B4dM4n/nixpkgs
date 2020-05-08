@@ -8,9 +8,8 @@ let
       "00kf3zmpp9ya4sydffpifn0j0mzm342a2vzh82p6r0vh10cg7xbg")
   ];
 
-  python = python3.override {
-    packageOverrides = lib.foldr lib.composeExtensions (self: super: { }) defaultOverrides;
-  };
+  python = python3.appendPackageOverrides
+    (lib.foldr lib.composeExtensions (self: super: { }) defaultOverrides);
 in python.pkgs.buildPythonPackage {
   pname = "gns3-server";
   inherit version;

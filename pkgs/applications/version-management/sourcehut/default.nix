@@ -8,8 +8,8 @@
 let
   fetchNodeModules = callPackage ./fetchNodeModules.nix { };
 
-  python = python37.override {
-    packageOverrides = self: super: {
+  python = python37.appendPackageOverrides
+    (self: super: {
       srht = self.callPackage ./core.nix { inherit fetchNodeModules; };
 
       buildsrht = self.callPackage ./builds.nix { };
@@ -23,8 +23,7 @@ let
       todosrht = self.callPackage ./todo.nix { };
 
       scmsrht = self.callPackage ./scm.nix { };
-    };
-  };
+    });
 in with python.pkgs; recurseIntoAttrs {
   inherit python;
   buildsrht = toPythonApplication buildsrht;

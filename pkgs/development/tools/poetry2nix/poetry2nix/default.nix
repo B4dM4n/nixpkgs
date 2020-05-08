@@ -117,7 +117,7 @@ let
           overrides
         );
       packageOverrides = lib.foldr lib.composeExtensions (self: super: { }) overlays;
-      py = python.override { inherit packageOverrides; self = py; };
+      py = python.appendPackageOverrides packageOverrides;
     in
     {
       python = py;

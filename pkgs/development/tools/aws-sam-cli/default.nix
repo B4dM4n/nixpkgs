@@ -4,8 +4,8 @@
 }:
 
 let
-  py = python.override {
-    packageOverrides = self: super: {
+  py = python.appendPackageOverrides
+    (self: super: {
       flask = super.flask.overridePythonAttrs (oldAttrs: rec {
         version = "1.0.2";
         src = oldAttrs.src.override {
@@ -21,8 +21,7 @@ let
           sha256 = "0glsvaz8igi2wy1hsnhm9fkn6560vdvdixzvkq6dn20z3hpaa5hk";
         };
       });
-    };
-  };
+    });
 
 in
 

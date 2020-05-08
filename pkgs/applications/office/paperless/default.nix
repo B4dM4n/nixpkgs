@@ -105,16 +105,15 @@ let
     };
   };
 
-  python = python3.override {
-    packageOverrides = self: super: {
+  python = python3.appendPackageOverrides
+    (self: super: {
       # Paperless only supports Django 2.0
       django = django_2_0 super;
       pyocr = pyocrWithUserTesseract super;
       # These are pre-release versions, hence they are private to this pkg
       django-filter = self.callPackage ./python-modules/django-filter.nix {};
       django-crispy-forms = self.callPackage ./python-modules/django-crispy-forms.nix {};
-    };
-  };
+    });
 
   django_2_0 = pyPkgs: pyPkgs.django_2_2.overrideDerivation (_: rec {
     pname = "Django";

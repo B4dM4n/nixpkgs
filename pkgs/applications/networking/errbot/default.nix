@@ -1,8 +1,8 @@
 { lib, fetchFromGitHub, python, glibcLocales }:
 
 let
-  py = python.override {
-    packageOverrides = self: super: {
+  py = python.appendPackageOverrides
+    (self: super: {
       # errbot requires markdown<3, and is not compatible with it either.
       markdown = super.markdown.overridePythonAttrs (oldAttrs: rec {
         version = "2.6.11";
@@ -34,8 +34,7 @@ let
           py.test --cov-report= --cov=slackclient tests --ignore=tests/test_server.py
         '';
       });
-    };
-  };
+    });
 
 in
 py.pkgs.buildPythonApplication rec {

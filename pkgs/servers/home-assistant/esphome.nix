@@ -1,8 +1,8 @@
 { lib, python3, platformio, esptool, git, protobuf3_10, fetchpatch }:
 
 let
-  python = python3.override {
-    packageOverrides = self: super: {
+  python = python3.appendPackageOverrides
+    (self: super: {
       protobuf = super.protobuf.override {
         protobuf = protobuf3_10;
       };
@@ -13,8 +13,7 @@ let
           sha256 = "1r5faspz73477hlbjgilw05xsms0glmsa371yqdd26znqsvg1b81";
         };
       });
-    };
-  };
+    });
 
 in python.pkgs.buildPythonApplication rec {
   pname = "esphome";

@@ -1,8 +1,8 @@
 { stdenv, python3, glibcLocales }:
 let
 
-  localPython = python3.override {
-    packageOverrides = self: super: {
+  localPython = python3.appendPackageOverrides
+    (self: super: {
       cement = super.cement.overridePythonAttrs (oldAttrs: rec {
         version = "2.8.2";
         src = oldAttrs.src.override {
@@ -51,8 +51,7 @@ let
           sha256 = "03l1r7ddd1a0j2snv1yd0hlnghjad3fg1an1jr8936ksv75slwch";
         };
       });
-    };
-  };
+    });
 in with localPython.pkgs; buildPythonApplication rec {
   pname = "awsebcli";
   version = "3.12.4";
