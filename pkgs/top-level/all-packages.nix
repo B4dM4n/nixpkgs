@@ -15271,7 +15271,7 @@ in
 
   ### DEVELOPMENT / PERL MODULES
 
-  perlInterpreters = callPackages ../development/interpreters/perl {};
+  perlInterpreters = callPackage ../development/interpreters/perl {};
   inherit (perlInterpreters) perl528 perl530 perldevel;
 
   perl528Packages = recurseIntoAttrs perl528.pkgs;
