@@ -1,4 +1,4 @@
-{ buildPackages, callPackage }:
+{ buildPackages, callPackage, lib }:
 
 { rustc, cargo, ... }:
 
@@ -11,9 +11,10 @@ rec {
     inherit cargo;
   };
 
-  buildRustPackage = callPackage ../../../build-support/rust {
-    inherit rustc cargo fetchCargoTarball;
-  };
+  buildRustPackage = lib.makeOverridableLayer "rust"
+    (callPackage ../../../build-support/rust {
+      inherit rustc cargo fetchCargoTarball;
+    });
 
   rustcSrc = callPackage ./rust-src.nix {
     inherit rustc;
