@@ -67,7 +67,10 @@ rec {
   makeOverridable = makeOverridableLayer null;
 
 
-  makeOverridableLayer = layer: f: origArgs:
+  makeOverridableLayer = makeOverridableLayerWithAlias null;
+
+
+  makeOverridableLayerWithAlias = alias: layer: f: origArgs:
     let
       result = f origArgs;
 
@@ -86,7 +89,7 @@ rec {
       # Change the result of the function call by applying g to it
       overrideResult = overrideArgsResult { };
       # Re-call the function but with different arguments and also change the result of the function call by applying g to it
-      overrideArgsResult = a: g: makeOverridableLayer layer (copyArgs (args: g (f args))) (overrideWith a);
+      overrideArgsResult = a: g: makeOverridableLayerWithAlias alias layer (copyArgs (args: g (f args))) (overrideWith a);
 
       # Override each named overridable of the given mapping from name to arguments.
       # If a layer name is not found throw an error message.
@@ -140,6 +143,7 @@ rec {
           if lib.isAttrs layers then overrideLayersAttrs layers
           else if lib.isList layers then overrideLayersList layers
           else throw "value is a ${builtins.typeOf layers} while a set or a list was expected";
+        ${alias} = override;
       }
     else if lib.isFunction result then
       # Transform the result into a functor while propagating its arguments
