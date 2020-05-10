@@ -64,9 +64,17 @@ rec {
      "<pkg>.overrideDerivation" to learn about `overrideDerivation` and caveats
      related to its use.
   */
-  makeOverridable = f: origArgs:
+  makeOverridable = makeOverridableLayer null;
+
+
+  makeOverridableLayer = layer: f: origArgs:
     let
       result = f origArgs;
+
+      setOrRemoveLayers = v: s:
+        if v == [ ]
+        then removeAttrs s [ "__overrideLayers" ]
+        else s // { __overrideLayers = v; };
 
       # Creates a functor with the same arguments as f
       copyArgs = g: lib.setFunctionArgs g (lib.functionArgs f);
@@ -74,23 +82,71 @@ rec {
       overrideWith = newArgs: origArgs // (if lib.isFunction newArgs then newArgs origArgs else newArgs);
 
       # Re-call the function but with different arguments
-      overrideArgs = copyArgs (newArgs: makeOverridable f (overrideWith newArgs));
+      overrideArgs = newArgs: overrideArgsResult newArgs lib.id;
       # Change the result of the function call by applying g to it
-      overrideResult = g: makeOverridable (copyArgs (args: g (f args))) origArgs;
+      overrideResult = overrideArgsResult { };
+      # Re-call the function but with different arguments and also change the result of the function call by applying g to it
+      overrideArgsResult = a: g: makeOverridableLayer layer (copyArgs (args: g (f args))) (overrideWith a);
+
+      # Override each named overridable of the given mapping from name to arguments.
+      # If a layer name is not found throw an error message.
+      overrideLayersAttrs = layers:
+        let
+          newArgs = if layer == null then origArgs else layers.${layer} or { };
+          newLayers = if layer == null then layers else removeAttrs layers [ layer ];
+        in
+        overrideArgsResult
+          newArgs
+          (x:
+            if newLayers != { }
+            then
+              if x ? overrideLayers
+              then x.overrideLayers newLayers
+              else throw "override layers ${builtins.toJSON (lib.attrNames newLayers)} not found"
+            else x);
+      # Override each nested overridable which has a name with the arguments from the list.
+      # The list is applied to the nested overridables first to last onto bottom to top,
+      # thus the first list entry overrides the most nested named overridable.
+      #
+      # This is achieved by storing the list into the __overrideLayers attribute in the most
+      # most nested result and removing the first entry of the list at each named overridable.
+      overrideLayersList = layers:
+        let
+          o = overrideResult (x:
+            if x ? overrideLayers
+            # Pass down the original list of layers
+            then x.overrideLayers layers
+            # Store the original list of layers for the upper layers to read
+            else setOrRemoveLayers layers x
+          );
+          layers' = o.__overrideLayers or [ ];
+          head = if layers' == [ ] then { } else lib.head layers';
+          tail = if layers' == [ ] then [ ] else lib.tail layers';
+        in
+        if layer == null
+        then o
+        else setOrRemoveLayers tail (o.override head);
     in
-      if builtins.isAttrs result then
-        result // {
-          override = overrideArgs;
-          overrideDerivation = fdrv: overrideResult (x: overrideDerivation x fdrv);
-          ${if result ? overrideAttrs then "overrideAttrs" else null} = fdrv:
-            overrideResult (x: x.overrideAttrs fdrv);
-        }
-      else if lib.isFunction result then
-        # Transform the result into a functor while propagating its arguments
-        lib.setFunctionArgs result (lib.functionArgs result) // {
-          override = overrideArgs;
-        }
-      else result;
+    if lib.isAttrs result then
+      result // rec {
+        override = overrideArgs;
+        overrideDerivation = fdrv: overrideResult (x: lib.overrideDerivation x fdrv);
+        overrideAttrs =
+          if result ? overrideAttrs
+          then fdrv: overrideResult (x: x.overrideAttrs fdrv)
+          else overrideArgs;
+        overrideLayerName = l: fdrv: overrideLayers { ${l} = fdrv; };
+        overrideLayers = layers:
+          if lib.isAttrs layers then overrideLayersAttrs layers
+          else if lib.isList layers then overrideLayersList layers
+          else throw "value is a ${builtins.typeOf layers} while a set or a list was expected";
+      }
+    else if lib.isFunction result then
+      # Transform the result into a functor while propagating its arguments
+      lib.setFunctionArgs result (lib.functionArgs result) // {
+        override = overrideArgs;
+      }
+    else result;
 
 
   /* Call the package function in the file `fn' with the required

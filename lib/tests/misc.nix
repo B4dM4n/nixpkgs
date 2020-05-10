@@ -20,7 +20,9 @@ let
 
 in
 
-runTests {
+runTests (
+  import ./customisation.nix //
+  {
 
 
 # TRIVIAL
@@ -660,4 +662,4 @@ runTests {
     expected = [ [ "foo" ] [ "foo" "<name>" "bar" ] [ "foo" "bar" ] ];
   };
 
-}
+})

@@ -18,9 +18,8 @@ in rec {
   #
   # * https://nixos.org/nix/manual/#ssec-derivation
   #   Explanation about derivations in general
-  mkDerivation =
-    {
-
+  mkDerivation = lib.makeOverridableLayer "derivation"
+    ({
     # These types of dependencies are all exhaustively documented in
     # the "Specifying Dependencies" section of the "Standard
     # Environment" chapter of the Nixpkgs manual.
@@ -342,8 +341,6 @@ in rec {
       lib.extendDerivation
         validity.handled
         ({
-           overrideAttrs = f: mkDerivation (attrs // (f attrs));
-
            # A derivation that always builds successfully and whose runtime
            # dependencies are the original derivations build time dependencies
            # This allows easy building and distributing of all derivations
@@ -375,6 +372,6 @@ in rec {
          # should be made available to Nix expressions using the
          # derivation (e.g., in assertions).
          passthru)
-        (derivation derivationArg);
-
+        (derivation derivationArg)
+    );
 }
