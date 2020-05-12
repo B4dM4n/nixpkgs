@@ -132,7 +132,10 @@ let
 
   plugins = removeAttrs terraform-providers [
     "override"
+    "overrideAttrs"
     "overrideDerivation"
+    "overrideLayerName"
+    "overrideLayers"
     "recurseForDerivations"
   ];
 in rec {
