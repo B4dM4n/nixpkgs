@@ -22,7 +22,7 @@
 , ruby, bundler
 } @ defs:
 
-lib.makeOverridable (
+lib.makeOverridableLayer "ruby" (
 
 { name ? null
 , gemName
