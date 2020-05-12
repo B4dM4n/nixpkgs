@@ -40,9 +40,11 @@ let
       };
     });
 
-  buildPerlPackage = callPackage ../development/perl-modules/generic {
-    inherit buildPerl;
-  };
+  buildPerlPackage =
+    stdenv.lib.makeOverridableLayer "perl"
+      (callPackage ../development/perl-modules/generic {
+        inherit buildPerl;
+      });
 
   # Helper functions for packages that use Module::Build to build.
   buildPerlModule = args:
