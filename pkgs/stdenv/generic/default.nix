@@ -148,9 +148,9 @@ let
       # to correct type of machine.
       inherit (hostPlatform) system;
 
-      inherit (import ./make-derivation.nix {
+      mkDerivation = import ./make-derivation.nix {
         inherit lib config stdenv;
-      }) mkDerivation;
+      };
 
       # For convenience, bring in the library functions in lib/ so
       # packages don't have to do that themselves.

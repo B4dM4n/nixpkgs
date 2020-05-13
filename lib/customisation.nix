@@ -133,11 +133,8 @@ rec {
     if lib.isAttrs result then
       result // rec {
         override = overrideArgs;
-        overrideDerivation = fdrv: overrideResult (x: lib.overrideDerivation x fdrv);
-        overrideAttrs =
-          if result ? overrideAttrs
-          then fdrv: overrideResult (x: x.overrideAttrs fdrv)
-          else overrideArgs;
+        overrideDerivation = overrideLayerName "derivation";
+        overrideAttrs = overrideLayerName "mkDerivation";
         overrideLayerName = l: fdrv: overrideLayers { ${l} = fdrv; };
         overrideLayers = layers:
           if lib.isAttrs layers then overrideLayersAttrs layers

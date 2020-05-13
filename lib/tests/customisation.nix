@@ -46,19 +46,6 @@ let
       expected = input + 1;
     };
 
-    "test${name}OverrideAttrsS" = {
-      expr = (
-        overridable.overrideAttrs { foo = 2; }
-      ).result;
-      expected = 2;
-    };
-    "test${name}OverrideAttrsF" = {
-      expr = (
-        overridable.overrideAttrs (old: { foo = old.foo + 1; })
-      ).result;
-      expected = input + 1;
-    };
-
     "test${name}OverrideLayerNameNotFound" = {
       expr =
         builtins.tryEval (
@@ -111,7 +98,7 @@ let
     };
   };
 
-  mkLayer1Test = name: overridable: layers: layer1Arg: {
+  mkLayer1Test = name: overridable: layers: layer1Arg: topArg: {
     "test${name}OverrideLayersL" = {
       expr = let r = overridable.overrideLayers [{ ${layer1Arg} = 2; }]; in
         {
@@ -154,9 +141,9 @@ let
     };
     "test${name}OverrideLayerNameAttr" = {
       expr = (
-        (overridable.overrideLayerName "l1" { ${layer1Arg} = 2; }).overrideAttrs (old: { foo = old.foo + 1; })
+        (overridable.overrideLayerName "l1" { ${layer1Arg} = 2; }).override (old: { ${topArg} = 3; })
       ).result;
-      expected = 3;
+      expected = if layer1Arg != topArg then 2 else 3;
     };
   };
 
@@ -178,7 +165,7 @@ let
       expected = { result = 2; hasLayers = false; };
     };
     "test${name}OverrideLayersS2Attrs" = {
-      expr = let r = (overridable.overrideLayers { l2 = { bar = 5; }; }).overrideAttrs (old: { foo = old.foo + 1; }); in
+      expr = let r = (overridable.overrideLayers { l2 = { bar = 5; }; }).overrideLayerName "l1" (old: { foo = old.foo + 1; }); in
         {
           inherit (r) result;
           hasLayers = r ? __overrideLayers;
@@ -204,11 +191,11 @@ in
 (mkSimpleTest "OverridableUN" overridableUN 1 "bar" 14) //
 (mkSimpleTest "OverridableUNU" overridableUNU 1 "baz" 15) //
 
-(mkLayer1Test "OverridableN" overridableN 1 "foo") //
-(mkLayer1Test "OverridableNN" overridableNN 2 "foo") //
-(mkLayer1Test "OverridableNUN" overridableNUN 2 "foo") //
-(mkLayer1Test "OverridableUN" overridableUN 1 "bar") //
-(mkLayer1Test "OverridableUNU" overridableUNU 1 "bar") //
+(mkLayer1Test "OverridableN" overridableN 1 "foo" "foo") //
+(mkLayer1Test "OverridableNN" overridableNN 2 "foo" "bar") //
+(mkLayer1Test "OverridableNUN" overridableNUN 2 "foo" "bar") //
+(mkLayer1Test "OverridableUN" overridableUN 1 "bar" "bar") //
+(mkLayer1Test "OverridableUNU" overridableUNU 1 "bar" "baz") //
 
 (mkLayer2Test "OverridableNN" overridableNN) //
 (mkLayer2Test "OverridableNUN" overridableNUN)
