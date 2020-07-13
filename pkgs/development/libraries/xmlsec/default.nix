@@ -42,9 +42,6 @@ stdenv.mkDerivation rec {
   # https://dev.entrouvert.org/issues/18771
   configureFlags = [ "--enable-soap" ];
 
-  # otherwise libxmlsec1-gnutls.so won't find libgcrypt.so, after #909
-  NIX_LDFLAGS = "-lgcrypt";
-
   postInstall = ''
     moveToOutput "bin/xmlsec1-config" "$dev"
     moveToOutput "lib/xmlsec1Conf.sh" "$dev"
