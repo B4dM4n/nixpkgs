@@ -22,9 +22,11 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkg-config ];
 
-  buildInputs = [ libxml2 gnutls libgcrypt libtool openssl nss ];
+  buildInputs = [ gnutls libgcrypt openssl nss ];
 
   propagatedBuildInputs = [
+    libxml2
+    libtool
     # required by xmlsec/transforms.h
     libxslt
   ];
@@ -50,7 +52,7 @@ stdenv.mkDerivation rec {
   passthru.tests.libxmlsec1-crypto = runCommandCC "libxmlsec1-crypto-test"
     {
       nativeBuildInputs = [ pkg-config ];
-      buildInputs = [ self libxml2 libxslt libtool ];
+      buildInputs = [ self ];
     } ''
     $CC $(pkg-config --cflags --libs xmlsec1) -o crypto-test ${writeText "crypto-test.c" ''
       #include <xmlsec/xmlsec.h>
