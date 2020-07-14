@@ -4,9 +4,6 @@
 , glib
 , gobject-introspection
 , gtk-doc
-, libtool
-, libxml2
-, libxslt
 , openssl
 , pkg-config
 , python3
@@ -33,9 +30,6 @@ stdenv.mkDerivation rec {
   buildInputs = [
     glib
     gtk-doc
-    libtool
-    libxml2
-    libxslt
     openssl
     python3.pkgs.six
     xmlsec
