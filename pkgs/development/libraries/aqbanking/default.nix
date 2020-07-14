@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, gmp, gwenhywfar, libtool, libxml2, libxslt
+{ lib, stdenv, fetchurl, gmp, gwenhywfar
 , pkg-config, gettext, xmlsec, zlib
 }:
 
@@ -23,7 +23,7 @@ in stdenv.mkDerivation rec {
     }' configure
   '';
 
-  buildInputs = [ gmp gwenhywfar libtool libxml2 libxslt xmlsec zlib ];
+  buildInputs = [ gmp gwenhywfar xmlsec zlib ];
 
   nativeBuildInputs = [ pkg-config gettext ];
 
