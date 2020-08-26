@@ -1,8 +1,8 @@
-{ stdenv, fetchFromGitHub, qtbase, qtwebengine, qtwebkit, qmake, makeWrapper, minizinc }:
+{ stdenv, mkDerivation, fetchFromGitHub, qtbase, qtwebengine, qtwebkit, qmake, makeWrapper, minizinc }:
 let
   version = "2.4.3";
 in
-stdenv.mkDerivation {
+mkDerivation {
   pname = "minizinc-ide";
   inherit version;
 
