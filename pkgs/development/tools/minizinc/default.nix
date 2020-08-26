@@ -1,12 +1,67 @@
-{ stdenv, fetchFromGitHub, fetchpatch, cmake, flex, bison }:
+{ stdenv
+, lib
+, config
+, fetchFromGitHub
+, fetchpatch
+, cmake
+, flex
+, bison
+, enableCbcSolver ? true
+, cbc
+, zlib
+, enableGecodeSolver ? true
+, writeText
+, gecode
+, mpfr
+, enableGurobiSolver ? config.allowUnfree or false
+, autoPatchelfHook
+, gurobi
+}:
+
+assert enableCbcSolver -> cbc != null && zlib != null;
+assert enableGecodeSolver -> gecode != null && mpfr != null;
+assert enableGurobiSolver -> gurobi != null;
 let
   version = "2.4.3";
+
+  gecodeConfig = writeText "gecode.msc" (builtins.toJSON {
+    id = "org.gecode.gecode";
+    name = "Gecode";
+    description = "Gecode FlatZinc executable";
+    version = gecode.version;
+    mznlib = "${gecode}/share/gecode/mznlib";
+    executable = "${gecode}/bin/fzn-gecode";
+    tags = [ "cp" "int" "float" "set" "restart" ];
+    stdFlags = [ "-a" "-f" "-n" "-p" "-r" "-s" "-t" ];
+    supportsMzn = false;
+    supportsFzn = true;
+    needsSolns2Out = true;
+    needsMznExecutable = false;
+    needsStdlibDir = false;
+    isGUIApplication = false;
+  });
+
+  testModel = writeText "model.mzn" ''
+    var 1..3: x;
+    var 1..3: y;
+    constraint x+y > 4;
+    constraint x < y;
+    solve satisfy;
+  '';
+
 in
 stdenv.mkDerivation {
   pname = "minizinc";
   inherit version;
 
-  buildInputs = [ cmake flex bison ];
+  nativeBuildInputs = lib.optionals enableGurobiSolver [ autoPatchelfHook ];
+
+  buildInputs = [ cmake flex bison ]
+    ++ lib.optionals enableCbcSolver [ cbc zlib ]
+    ++ lib.optionals enableGecodeSolver [ gecode mpfr ]
+    ++ lib.optionals enableGurobiSolver [ gurobi ];
+
+  runtimeDependencies = lib.optionals enableGurobiSolver [ gurobi ];
 
   src = fetchFromGitHub {
     owner = "MiniZinc";
@@ -32,7 +87,20 @@ stdenv.mkDerivation {
     })
   ];
 
-  meta = with stdenv.lib; {
+  postInstall = lib.optionalString enableGecodeSolver ''
+    mkdir -p $out/share/minizinc/solvers
+    ln -s ${gecodeConfig} $out/share/minizinc/solvers/gecode.msc
+  '';
+
+  doInstallCheck = enableCbcSolver || enableGecodeSolver;
+  installCheckPhase = let check = enable: solver: lib.optionalString enable ''
+    echo 'checking ${solver} solver'
+    $out/bin/minizinc --solver ${solver} ${testModel}
+  ''; in
+    check enableCbcSolver "org.minizinc.mip.coin-bc" +
+    check enableGecodeSolver "org.gecode.gecode";
+
+  meta = with lib; {
     homepage = "https://www.minizinc.org/";
     description = "MiniZinc is a medium-level constraint modelling language.";
 
