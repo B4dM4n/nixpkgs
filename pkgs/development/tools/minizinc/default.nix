@@ -22,6 +22,14 @@ stdenv.mkDerivation {
       url = "https://github.com/MiniZinc/libminizinc/commit/d3136f6f198d3081943c17ac6890dbe14a81d112.diff";
       sha256 = "1f4wxn9422ndgq6dd0vqdxm2313srm7gn9nh82aas2xijdxlmz2c";
     })
+    (fetchpatch {
+      url = "https://github.com/MiniZinc/libminizinc/commit/8d4dcf302e78231f7c2665150e8178cacd06f91c.diff";
+      sha256 = "1wgciyrqijv7b4wqha94is5skji8j7b9wq6fkdsnsimfd3xpxhqw";
+    })
+    (fetchpatch {
+      url = "https://github.com/MiniZinc/libminizinc/commit/952ffda0bd23dc21f83d3e3f080ea5b3a414e8e0.diff";
+      sha256 = "0cnsfqw0hwm7rmazqnb99725rm2vdwab75vdpr5x5l3kjwsn76rj";
+    })
   ];
 
   meta = with stdenv.lib; {
