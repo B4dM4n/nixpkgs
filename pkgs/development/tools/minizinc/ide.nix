@@ -1,4 +1,4 @@
-{ stdenv, mkDerivation, fetchFromGitHub, qtbase, qtwebengine, qtwebkit, qmake, makeWrapper, minizinc }:
+{ stdenv, mkDerivation, fetchFromGitHub, qtwebengine, qmake, minizinc }:
 let
   version = "2.4.3";
 in
@@ -6,8 +6,8 @@ mkDerivation {
   pname = "minizinc-ide";
   inherit version;
 
-  nativeBuildInputs = [ qmake makeWrapper ];
-  buildInputs = [ qtbase qtwebengine qtwebkit ];
+  nativeBuildInputs = [ qmake ];
+  buildInputs = [ qtwebengine ];
 
   src = fetchFromGitHub {
     owner = "MiniZinc";
@@ -21,7 +21,7 @@ mkDerivation {
   enableParallelBuilding = true;
 
   postInstall = ''
-    wrapProgram $out/bin/MiniZincIDE --prefix PATH ":" ${stdenv.lib.makeBinPath [ minizinc ]}
+    qtWrapperArgs+=(--prefix PATH ":" ${stdenv.lib.makeBinPath [ minizinc ]})
   '';
 
   meta = with stdenv.lib; {
