@@ -3151,6 +3151,8 @@ in
 
   dnscontrol = callPackage ../applications/networking/dnscontrol { };
 
+  dnsdiag = callPackage ../applications/networking/dnsdiag { };
+
   dnsenum = callPackage ../tools/security/dnsenum { };
 
   dnsmasq = callPackage ../tools/networking/dnsmasq { };
