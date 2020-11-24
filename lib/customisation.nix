@@ -140,12 +140,37 @@ rec {
         if layer == null
         then o
         else setOrRemoveLayers tail (o.override head);
+      # Override each nested overridable which has a name with the arguments from the args attribute
+      # set. Argument names that are returned by lib.functionArgs for the current layer function are
+      # removed from args and then applied to the current layer. All other arguments in args are then
+      # passed down to the next layer.
+      # To get the full set of arguments for a given layer from lib.functionArgs, all arguments that
+      # are used by the layer function must explicitly be named in the argument set. Arguments that
+      # are used via the '{ ... } @ args:' ellipsis syntax are not considered and will not be passed
+      # to the function. For example, the following definition would not allow pname or version to be
+      # overridden by overrideAuto:
+      # { name ? "${args.pname}-${args.version}", ... } @ args: ...
+      overrideAuto = args:
+        let
+          newArgs = if layer == null then { } else builtins.intersectAttrs (lib.functionArgs f) args;
+          restArgs = if layer == null then args else builtins.removeAttrs args (lib.attrNames (lib.functionArgs f));
+        in
+        overrideArgsResult
+          newArgs
+          (x:
+            if restArgs != { }
+            then
+              if x ? overrideAuto
+              then x.overrideAuto restArgs
+              else throw "no override layer for arguments ${builtins.toJSON (lib.attrNames restArgs)} found"
+            else x);
     in
     if lib.isAttrs result then
       result // rec {
         override = overrideArgs;
         overrideDerivation = overrideLayerName "derivation";
         overrideAttrs = overrideLayerName "mkDerivation";
+        inherit overrideAuto;
         overrideLayerName = l: fdrv: overrideLayers { ${l} = fdrv; };
         overrideLayers = layers:
           if lib.isAttrs layers then overrideLayersAttrs layers
