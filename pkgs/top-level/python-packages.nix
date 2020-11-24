@@ -1022,13 +1022,13 @@ in {
 
   cachetools = let
     cachetools' = callPackage ../development/python-modules/cachetools { };
-    cachetools_2 = cachetools'.overridePythonAttrs (oldAttrs: rec {
+    cachetools_2 = cachetools'.overrideAuto rec {
       version = "3.1.1";
-      src = oldAttrs.src.override {
+      src = { prev }: prev.override {
         inherit version;
         sha256 = "16m69l6n6y1r1y7cklm92rr7v69ldig2n3lbl3j323w5jz7d78lf";
       };
-    });
+    };
   in if isPy3k then cachetools' else cachetools_2;
 
   cachy = callPackage ../development/python-modules/cachy { };
@@ -2459,13 +2459,13 @@ in {
     in if isPy3k then
       google_api_python_client
     else # Python 2.7 support was deprecated but is still needed by weboob and duplicity
-      google_api_python_client.overridePythonAttrs (old: rec {
+      google_api_python_client.overrideAuto rec {
         version = "1.7.6";
-        src = old.src.override {
+        src = { prev }: prev.override {
           inherit version;
           sha256 = "14w5sdrp0bk9n0r2lmpqmrbf2zclpfq6q7giyahnskkfzdkb165z";
         };
-      });
+      };
 
   googleapis_common_protos = callPackage ../development/python-modules/googleapis_common_protos { };
 
@@ -6122,13 +6122,13 @@ in {
 
   pyuavcan = callPackage
     ../development/python-modules/pyuavcan { # this version pinpoint to anold version is necessary due to a regression
-      nunavut = self.nunavut.overridePythonAttrs (old: rec {
+      nunavut = self.nunavut.overrideAuto rec {
         version = "0.2.3";
-        src = old.src.override {
+        src = { prev }: prev.override {
           inherit version;
           sha256 = "0x8a9h4mc2r2yz49s9arsbs4bn3h25mvmg4zbgksm9hcyi9536x5";
         };
-      });
+      };
     };
 
   pyudev = callPackage ../development/python-modules/pyudev { inherit (pkgs) systemd; };
@@ -6184,13 +6184,13 @@ in {
 
   pyxattr = let
     pyxattr' = callPackage ../development/python-modules/pyxattr { };
-    pyxattr_2 = pyxattr'.overridePythonAttrs (oldAttrs: rec {
+    pyxattr_2 = pyxattr'.overrideAuto rec {
       version = "0.6.1";
-      src = oldAttrs.src.override {
+      src = { prev }: prev.override {
         inherit version;
         sha256 = "b525843f6b51036198b3b87c4773a5093d6dec57d60c18a1f269dd7059aa16e3";
       };
-    });
+    };
   in if isPy3k then pyxattr' else pyxattr_2;
 
   pyx = callPackage ../development/python-modules/pyx { };
@@ -6593,35 +6593,35 @@ in {
 
   scikit-tda = callPackage ../development/python-modules/scikit-tda { };
 
-  scipy_1_3 = self.scipy.overridePythonAttrs (oldAttrs: rec {
+  scipy_1_3 = self.scipy.overrideAuto rec {
     version = "1.3.3";
-    src = oldAttrs.src.override {
+    src = { prev }: prev.override {
       inherit version;
       sha256 = "02iqb7ws7fw5fd1a83hx705pzrw1imj7z0bphjsl4bfvw254xgv4";
     };
     doCheck = false;
     disabled = !isPy3k;
-  });
+  };
 
-  scipy_1_4 = self.scipy.overridePythonAttrs (oldAttrs: rec {
+  scipy_1_4 = self.scipy.overrideAuto rec {
     version = "1.4.1";
-    src = oldAttrs.src.override {
+    src = { prev }: prev.override {
       inherit version;
       sha256 = "0ndw7zyxd2dj37775mc75zm4fcyiipnqxclc45mkpxy8lvrvpqfy";
     };
     doCheck = false;
     disabled = !isPy3k;
-  });
+  };
 
   scipy = let
     scipy_ = callPackage ../development/python-modules/scipy { };
-    scipy_1_2 = scipy_.overridePythonAttrs (oldAttrs: rec {
+    scipy_1_2 = scipy_.overrideAuto rec {
       version = "1.2.2";
-      src = oldAttrs.src.override {
+      src = { prev }: prev.override {
         inherit version;
         sha256 = "a4331e0b8dab1ff75d2c67b5158a8bb9a83c799d7140094dda936d876c7cfbb1";
       };
-    });
+    };
   in if pythonOlder "3.5" then scipy_1_2 else scipy_;
 
   scour = callPackage ../development/python-modules/scour { };
