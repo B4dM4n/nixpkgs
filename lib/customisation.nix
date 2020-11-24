@@ -81,8 +81,19 @@ rec {
 
       # Creates a functor with the same arguments as f
       copyArgs = g: lib.setFunctionArgs g (lib.functionArgs f);
-      # Changes the original arguments with (potentially a function that returns) a set of new attributes
-      overrideWith = newArgs: origArgs // (if lib.isFunction newArgs then newArgs origArgs else newArgs);
+      # Changes the original arguments with (potentially a function that returns) a set of new attributes.
+      # When newArgs is an attribute set, its values can be functions of the following style:
+      # { prev }: ...
+      overrideWith = newArgs: origArgs //
+        (if lib.isFunction newArgs
+        then newArgs origArgs
+        else
+          lib.mapAttrs
+            (n: v:
+              if lib.isFunction v && lib.functionArgs v == { prev = false; }
+              then v { prev = origArgs.${n} or null; }
+              else v)
+            newArgs);
 
       # Re-call the function but with different arguments
       overrideArgs = newArgs: overrideArgsResult newArgs lib.id;
