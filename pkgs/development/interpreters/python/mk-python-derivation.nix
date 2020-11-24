@@ -27,7 +27,13 @@
 , eggInstallHook
 }:
 
-{ name ? "${attrs.pname}-${attrs.version}"
+{ name ? "${pname}-${version}"
+
+, pname ? null
+, version ? null
+, src ? null
+, postFixup ? null
+, checkPhase ? null
 
 # Build-time dependencies for the package
 , nativeBuildInputs ? []
