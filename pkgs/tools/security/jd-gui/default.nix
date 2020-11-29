@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, jre, jdk, gradle_5, makeDesktopItem, copyDesktopItems, perl, writeText, runtimeShell }:
+{ stdenv, fetchFromGitHub, jre, jdk, gradle_5, makeDesktopItem, perl, writeText, runtimeShell }:
 
 let
   pname = "jd-gui";
@@ -71,7 +71,9 @@ in stdenv.mkDerivation rec {
   inherit pname version src;
   name = "${pname}-${version}";
 
-  nativeBuildInputs = [ jdk gradle_5 copyDesktopItems ];
+  nativeBuildInputs = [ jdk gradle_5 ];
+
+  buildInputs = [ desktopItem ];
 
   buildPhase = ''
     export GRADLE_USER_HOME=$(mktemp -d)
@@ -96,8 +98,6 @@ in stdenv.mkDerivation rec {
 
     runHook postInstall
   '';
-
-  desktopItems = [ desktopItem ];
 
   meta = with stdenv.lib; {
     description = "Fast Java Decompiler with powerful GUI";
