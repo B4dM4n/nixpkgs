@@ -1,0 +1,1 @@
+desktopItems+=("@out@")

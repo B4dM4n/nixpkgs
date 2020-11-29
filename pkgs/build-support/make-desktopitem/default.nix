@@ -1,4 +1,4 @@
-{ lib, runCommandLocal, desktop-file-utils }:
+{ lib, runCommandLocal, desktop-file-utils, copyDesktopItems }:
 
 # See https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html
 { name # The name of the desktop file
@@ -51,13 +51,22 @@ in
 runCommandLocal "${name}.desktop"
 {
   nativeBuildInputs = [ desktop-file-utils ];
+  # Provide a dev output that can be used to automatically copy this desktop file
+  outputs = [ "out" "dev" ];
+  propagatedNativeBuildInputs = [ copyDesktopItems ];
+  setupHook = ./setup-hook.sh;
 }
-  (''
+  ''
     mkdir -p "$out/share/applications"
     cat > "$out/share/applications/${name}.desktop" <<EOF
     ${builtins.concatStringsSep "\n" desktopFileStrings}
     EOF
-  '' + lib.optionalString fileValidation ''
-    echo "Running desktop-file validation"
-    desktop-file-validate "$out/share/applications/${name}.desktop"
-  '')
+
+    ${lib.optionalString fileValidation ''
+      echo "Running desktop-file validation"
+      desktop-file-validate "$out/share/applications/${name}.desktop"
+    ''}
+
+    # Use the fixupPhase from stdenv to populate the dev output
+    fixupPhase
+  ''
