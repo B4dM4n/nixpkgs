@@ -26,8 +26,9 @@ copyDesktopItems() {
 
     for desktopItem in $desktopItems; do
         if [[ -f "$desktopItem" ]]; then
-            echo "Copying '$desktopItem' into '$out/share/applications'"
-            install -D -m 444 -t "$out"/share/applications "$desktopItem"
+            filename=$(stripHash "$desktopItem")
+            echo "Copying '$desktopItem' to '$out/share/applications/$filename'"
+            install -D -m 444 "$desktopItem" "$out/share/applications/$filename"
         else
             for f in "$desktopItem"/share/applications/*.desktop; do
                 echo "Copying '$f' into '$out/share/applications'"
