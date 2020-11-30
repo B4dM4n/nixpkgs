@@ -1,4 +1,4 @@
-{ lib, runCommandLocal, desktop-file-utils, copyDesktopItems }:
+{ lib, runCommandLocal, desktop-file-utils, copyDesktopItems, writeShellScript }:
 
 # See https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html
 { name # The name of the desktop file
@@ -47,26 +47,35 @@ let
         mainSection
       )
     ++ (if extraEntries == "" then [ ] else [ "${extraEntries}" ]);
+
+  self = runCommandLocal "${name}.desktop"
+    {
+      nativeBuildInputs = [ desktop-file-utils ];
+      # Provide a dev output that can be used to automatically copy this desktop file
+      outputs = [ "out" "dev" ];
+      propagatedNativeBuildInputs = [ copyDesktopItems ];
+      setupHook = ./setup-hook.sh;
+      passthru.install = writeShellScript "install" ''
+        fail() { echo "$@"; exit 1; }
+        [[ -n ''${1:-} ]] || fail "No destination given"
+        dest="$1/share/applications/${name}.desktop"
+        [[ ! -e $dest ]] || fail "Destination '$dest' already exists"
+        install -D -m 444 "${self}/share/applications/${name}.desktop" "$dest"
+      '';
+    }
+    ''
+      mkdir -p "$out/share/applications"
+      cat > "$out/share/applications/${name}.desktop" <<EOF
+      ${builtins.concatStringsSep "\n" desktopFileStrings}
+      EOF
+
+      ${lib.optionalString fileValidation ''
+        echo "Running desktop-file validation"
+        desktop-file-validate "$out/share/applications/${name}.desktop"
+      ''}
+
+      # Use the fixupPhase from stdenv to populate the dev output
+      fixupPhase
+    '';
 in
-runCommandLocal "${name}.desktop"
-{
-  nativeBuildInputs = [ desktop-file-utils ];
-  # Provide a dev output that can be used to automatically copy this desktop file
-  outputs = [ "out" "dev" ];
-  propagatedNativeBuildInputs = [ copyDesktopItems ];
-  setupHook = ./setup-hook.sh;
-}
-  ''
-    mkdir -p "$out/share/applications"
-    cat > "$out/share/applications/${name}.desktop" <<EOF
-    ${builtins.concatStringsSep "\n" desktopFileStrings}
-    EOF
-
-    ${lib.optionalString fileValidation ''
-      echo "Running desktop-file validation"
-      desktop-file-validate "$out/share/applications/${name}.desktop"
-    ''}
-
-    # Use the fixupPhase from stdenv to populate the dev output
-    fixupPhase
-  ''
+self
