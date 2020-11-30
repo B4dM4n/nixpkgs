@@ -1,7 +1,29 @@
-{ stdenv, lib, fetchFromGitHub, cmake, pkgconfig
-, boost, cereal, curl, eigen, expat, glew, libpng, tbb, wxGTK31
-, gtest, nlopt, xorg, makeDesktopItem
-, cgal_5, gmp, ilmbase, mpfr, qhull, openvdb, systemd
+{ stdenv
+, lib
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, boost
+, cereal
+, curl
+, eigen
+, expat
+, glew
+, libpng
+, tbb
+, wxGTK31
+, gtest
+, nlopt
+, xorg
+, makeDesktopItem
+, copyDesktopItems
+, cgal_5
+, gmp
+, ilmbase
+, mpfr
+, qhull
+, openvdb
+, systemd
 }:
 stdenv.mkDerivation rec {
   pname = "prusa-slicer";
@@ -10,6 +32,7 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   nativeBuildInputs = [
+    copyDesktopItems
     cmake
     pkgconfig
   ];
@@ -75,19 +98,19 @@ stdenv.mkDerivation rec {
   postInstall = ''
     mkdir -p "$out/share/pixmaps/"
     ln -s "$out/share/PrusaSlicer/icons/PrusaSlicer.png" "$out/share/pixmaps/PrusaSlicer.png"
-    mkdir -p "$out/share/applications"
-    cp "$desktopItem"/share/applications/* "$out/share/applications/"
   '';
 
-  desktopItem = makeDesktopItem {
-    name = "PrusaSlicer";
-    exec = "prusa-slicer";
-    icon = "PrusaSlicer";
-    comment = "G-code generator for 3D printers";
-    desktopName = "PrusaSlicer";
-    genericName = "3D printer tool";
-    categories = "Development;";
-  };
+  desktopItems = [
+    (makeDesktopItem {
+      name = "PrusaSlicer";
+      exec = "prusa-slicer";
+      icon = "PrusaSlicer";
+      comment = "G-code generator for 3D printers";
+      desktopName = "PrusaSlicer";
+      genericName = "3D printer tool";
+      categories = "Development;";
+    })
+  ];
 
   meta = with stdenv.lib; {
     description = "G-code generator for 3D printer";

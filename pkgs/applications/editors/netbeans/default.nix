@@ -50,8 +50,7 @@ stdenv.mkDerivation {
     done;
 
     # Create desktop item, so we can pick it from the KDE/GNOME menu
-    mkdir -pv $out/share/applications
-    ln -s ${desktopItem}/share/applications/* $out/share/applications
+    ${desktopItem.install} $out
   '';
 
   buildInputs = [ makeWrapper perl python unzip libicns imagemagick ];

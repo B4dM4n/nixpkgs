@@ -27,7 +27,7 @@ in mkDerivation rec {
 
   buildInputs = [
     qtbase qtsvg qtserialport qtwebengine qtmultimedia qttools zlib
-    qtconnectivity qtcharts libusb-compat-0_1
+    qtconnectivity qtcharts libusb-compat-0_1 desktopItem
   ];
   nativeBuildInputs = [ flex makeWrapper qmake yacc ];
 
@@ -63,7 +63,6 @@ in mkDerivation rec {
 
     mkdir -p $out/bin
     cp src/GoldenCheetah $out/bin
-    install -Dm644 "${desktopItem}/share/applications/"* -t $out/share/applications/
     install -Dm644 src/Resources/images/gc.png $out/share/pixmaps/goldencheetah.png
 
     runHook postInstall

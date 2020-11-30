@@ -28,15 +28,13 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ desktopItem ];
 
   installPhase = ''
     runHook preInstall
 
     mkdir -p $out/bin $out/share/${pname}/
     mv resources/app.asar $out/share/${pname}/
-
-    mkdir -p $out/share/applications
-    ln -s ${desktopItem}/share/applications/* $out/share/applications/
 
     makeWrapper ${electron}/bin/electron $out/bin/${pname} \
       --add-flags $out/share/${pname}/app.asar

@@ -26,14 +26,12 @@ in stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ desktopItem ];
 
   installPhase = ''
     mkdir -p $out/share/java/${pname}
     cp -R * $out/share/java/${pname}
     rm $out/share/java/${pname}/${pname}.{sh,desktop}
-
-    mkdir -p $out/share/applications
-    ln -s ${desktopItem}/share/applications/* $out/share/applications/
 
     for i in 16 32 48 128; do
       mkdir -p $out/share/icons/hicolor/''${i}x''${i}/apps

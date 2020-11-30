@@ -2,6 +2,13 @@
 
 let
   electron = electron_10;
+
+  desktopItem = makeDesktopItem {
+     name = "teleprompter";
+     exec = "teleprompter";
+     type = "Application";
+     desktopName = "Teleprompter";
+  };
 in
 stdenv.mkDerivation rec {
   pname = "teleprompter";
@@ -16,23 +23,17 @@ stdenv.mkDerivation rec {
   dontStrip = true;
 
   nativeBuildInputs = [ autoPatchelfHook makeWrapper nodePackages.asar ];
+  buildInputs = [ desktopItem ];
+
   installPhase = ''
-    mkdir -p $out/bin $out/opt/teleprompter $out/share/applications
+    mkdir -p $out/bin $out/opt/teleprompter
     asar e resources/app.asar $out/opt/teleprompter/resources/app.asar.unpacked
-    ln -s ${desktopItem}/share/applications/* $out/share/applications
   '';
 
   postFixup = ''
     makeWrapper ${electron}/bin/electron $out/bin/teleprompter \
       --add-flags "$out/opt/teleprompter/resources/app.asar.unpacked --without-update"
   '';
-
-  desktopItem = makeDesktopItem {
-     name = "teleprompter";
-     exec = "teleprompter";
-     type = "Application";
-     desktopName = "Teleprompter";
-  };
 
   meta = with lib; {
     description = "The most complete, free, teleprompter app on the web";
@@ -42,4 +43,3 @@ stdenv.mkDerivation rec {
     maintainers = with maintainers; [ Scriptkiddi ];
   };
 }
-

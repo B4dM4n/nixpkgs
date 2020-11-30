@@ -27,6 +27,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [makeWrapper];
+  buildInputs =  [ desktopItem ];
 
   ldLibraryPath = stdenv.lib.makeLibraryPath [
     stdenv.cc.cc
@@ -53,9 +54,6 @@ stdenv.mkDerivation rec {
 
     mkdir -p $BASEDIR/lib
     cp -r lib/* $BASEDIR/lib
-
-    mkdir -p $out/share/applications
-    cp $desktopItem/share/applications/* $out/share/applications
 
     mkdir -p $out/share/icons
     cp ${icon} $out/share/icons/robomongo.png

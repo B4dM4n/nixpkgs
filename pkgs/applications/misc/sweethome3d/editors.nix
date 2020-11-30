@@ -23,7 +23,7 @@ let
       categories = "Graphics;2DGraphics;3DGraphics;";
     };
 
-    buildInputs = [ ant jre jdk makeWrapper gtk3 gsettings-desktop-schemas ];
+    buildInputs = [ ant jre jdk makeWrapper gtk3 gsettings-desktop-schemas editorItem ];
 
     patchPhase = ''
       sed -i -e 's,../SweetHome3D,${application.src},g' build.xml
@@ -36,9 +36,8 @@ let
 
     installPhase = ''
       mkdir -p $out/bin
-      mkdir -p $out/share/{java,applications}
+      mkdir -p $out/share/java
       cp ${module}-${version}.jar $out/share/java/.
-      cp "${editorItem}/share/applications/"* $out/share/applications
       makeWrapper ${jre}/bin/java $out/bin/$exec \
         --prefix XDG_DATA_DIRS : "$XDG_ICON_DIRS:${gtk3.out}/share:${gsettings-desktop-schemas}/share:$out/share:$GSETTINGS_SCHEMAS_PATH" \
         --add-flags "-jar $out/share/java/${module}-${version}.jar -d${toString stdenv.hostPlatform.parsed.cpu.bits}"

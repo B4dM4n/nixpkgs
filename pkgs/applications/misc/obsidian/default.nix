@@ -39,6 +39,7 @@ in stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ makeWrapper graphicsmagick ];
+  buildInputs = [ desktopItem ];
 
   unpackPhase = ''
     gzip -dc $src > obsidian.asar
@@ -51,9 +52,6 @@ in stdenv.mkDerivation rec {
       --add-flags $out/share/electron/obsidian.asar
 
     install -m 444 -D obsidian.asar $out/share/electron/obsidian.asar
-
-    install -m 444 -D "${desktopItem}/share/applications/"* \
-      -t $out/share/applications/
 
     for size in 16 24 32 48 64 128 256 512; do
       mkdir -p $out/share/icons/hicolor/"$size"x"$size"/apps

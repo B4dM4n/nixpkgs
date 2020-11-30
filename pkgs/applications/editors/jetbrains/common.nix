@@ -6,13 +6,11 @@
 
 with stdenv.lib;
 
-let loName = toLower product;
-    hiName = toUpper product;
-    execName = concatStringsSep "-" (init (splitString "-" name));
-in
+let
+  loName = toLower product;
+  hiName = toUpper product;
+  execName = concatStringsSep "-" (init (splitString "-" name));
 
-with stdenv; lib.makeOverridable mkDerivation rec {
-  inherit name src meta;
   desktopItem = makeDesktopItem {
     name = execName;
     exec = execName;
@@ -25,8 +23,13 @@ with stdenv; lib.makeOverridable mkDerivation rec {
       StartupWMClass=${wmClass}
     '';
   };
+in
+
+with stdenv; lib.makeOverridable mkDerivation rec {
+  inherit name src meta;
 
   nativeBuildInputs = [ makeWrapper patchelf unzip ];
+  buildInputs = [ desktopItem ];
 
   patchPhase = lib.optionalString (!stdenv.isDarwin) ''
       get_file_size() {
@@ -60,7 +63,6 @@ with stdenv; lib.makeOverridable mkDerivation rec {
     mv bin/fsnotifier* $out/libexec/${name}/.
 
     jdk=${jdk.home}
-    item=${desktopItem}
 
     makeWrapper "$out/$name/bin/${loName}.sh" "$out/bin/${execName}" \
       --prefix PATH : "$out/libexec/${name}:${lib.optionalString (stdenv.isDarwin) "${jdk}/jdk/Contents/Home/bin:"}${stdenv.lib.makeBinPath [ jdk coreutils gnugrep which git ]}" \
@@ -73,8 +75,6 @@ with stdenv; lib.makeOverridable mkDerivation rec {
       --set ${hiName}_JDK "$jdk" \
       --set ANDROID_JAVA_HOME "$jdk" \
       --set JAVA_HOME "$jdk"
-
-    ln -s "$item/share/applications" $out/share
   '';
 
 } // stdenv.lib.optionalAttrs (!(meta.license.free or true)) {

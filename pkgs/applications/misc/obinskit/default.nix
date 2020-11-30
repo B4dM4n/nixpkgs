@@ -33,6 +33,7 @@ stdenv.mkDerivation rec {
   sourceRoot = "ObinsKit_${version}_x64";
 
   nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ desktopItem ];
 
   dontConfigure = true;
   dontBuild = true;
@@ -43,9 +44,8 @@ stdenv.mkDerivation rec {
     cp -r resources $out/opt/obinskit/
     cp -r locales $out/opt/obinskit/
 
-    mkdir -p $out/share/{applications,pixmaps}
+    mkdir -p $out/share/pixmaps
     install resources/icons/tray-darwin@2x.png $out/share/pixmaps/obinskit.png
-    ln -s ${desktopItem}/share/applications/* $out/share/applications
   '';
 
   postFixup = ''

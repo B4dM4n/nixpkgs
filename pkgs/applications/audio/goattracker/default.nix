@@ -1,7 +1,6 @@
 { stdenv
 , fetchurl
 , unzip
-, copyDesktopItems
 , makeDesktopItem
 , imagemagick
 , SDL
@@ -38,8 +37,8 @@ in stdenv.mkDerivation rec {
   };
   sourceRoot = (if isStereo then "gt2stereo/trunk" else "goattrk2") + "/src";
 
-  nativeBuildInputs = [ copyDesktopItems unzip imagemagick ];
-  buildInputs = [ SDL ];
+  nativeBuildInputs = [ unzip imagemagick ];
+  buildInputs = [ SDL desktopItem ];
 
   # PREFIX gets treated as BINDIR.
   makeFlags = [ "PREFIX=$(out)/bin/" ];
@@ -59,8 +58,6 @@ in stdenv.mkDerivation rec {
 
     runHook postInstall
   '';
-
-  desktopItems = [ desktopItem ];
 
   meta = {
     description = "A crossplatform music editor for creating Commodore 64 music. Uses reSID library by Dag Lem and supports alternatively HardSID & CatWeasel devices"

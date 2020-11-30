@@ -23,15 +23,17 @@ in stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ makeWrapper ];
 
-  desktopItem = makeDesktopItem rec {
-    name = "airtame";
-    exec = longName;
-    comment = "Airtame Streaming Client";
-    desktopName = "Airtame";
-    icon = name;
-    genericName = comment;
-    categories = "Network;";
-  };
+  buildInputs = let
+    desktopItem = makeDesktopItem rec {
+      name = "airtame";
+      exec = longName;
+      comment = "Airtame Streaming Client";
+      desktopName = "Airtame";
+      icon = name;
+      genericName = comment;
+      categories = "Network;";
+    };
+  in [ desktopItem ];
 
   installPhase = ''
     opt="$out/opt/airtame"
@@ -39,8 +41,6 @@ in stdenv.mkDerivation rec {
     cp -R . "$opt"
     mkdir -p "$out/bin"
     ln -s "$opt/${longName}" "$out/bin/"
-    mkdir -p "$out/share"
-    cp -r "${desktopItem}/share/applications" "$out/share/"
     mkdir -p "$out/share/icons"
     ln -s "$opt/icon.png" "$out/share/icons/airtame.png"
 

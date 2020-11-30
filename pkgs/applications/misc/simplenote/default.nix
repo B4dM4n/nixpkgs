@@ -35,6 +35,17 @@ let
     ];
   };
 
+  desktopItem = makeDesktopItem {
+    categories = "Development";
+    comment = "Simplenote for Linux";
+    desktopName = "Simplenote";
+    exec = "simplenote %U";
+    icon = "simplenote";
+    name = "simplenote";
+    startupNotify = "true";
+    type = "Application";
+  };
+
   linux = stdenv.mkDerivation rec {
     inherit pname version meta;
 
@@ -43,17 +54,6 @@ let
         "https://github.com/Automattic/simplenote-electron/releases/download/"
         + "v${version}/Simplenote-linux-${version}-amd64.deb";
       inherit sha256;
-    };
-
-    desktopItem = makeDesktopItem {
-      categories = "Development";
-      comment = "Simplenote for Linux";
-      desktopName = "Simplenote";
-      exec = "simplenote %U";
-      icon = "simplenote";
-      name = "simplenote";
-      startupNotify = "true";
-      type = "Application";
     };
 
     dontBuild = true;
@@ -68,7 +68,7 @@ let
       wrapGAppsHook
     ];
 
-    buildInputs = atomEnv.packages;
+    buildInputs = [ desktopItem ] ++ atomEnv.packages;
 
     unpackPhase = "dpkg-deb -x $src .";
 
@@ -77,9 +77,6 @@ let
       cp -R "opt" "$out"
       cp -R "usr/share" "$out/share"
       chmod -R g-w "$out"
-
-      mkdir -p "$out/share/applications"
-      cp "${desktopItem}/share/applications/"* "$out/share/applications"
     '';
 
     runtimeDependencies = [

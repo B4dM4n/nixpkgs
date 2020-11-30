@@ -21,6 +21,15 @@ let
     xorg.libX11
     zlib
   ];
+
+  desktopItem = makeDesktopItem {
+    name = "wasabi";
+    exec = "wasabiwallet";
+    desktopName = "Wasabi";
+    genericName = "Bitcoin wallet";
+    comment = meta.description;
+    categories = "Network;Utility;";
+  };
 in
 stdenv.mkDerivation rec {
   pname = "wasabiwallet";
@@ -31,17 +40,10 @@ stdenv.mkDerivation rec {
     sha256 = "0nl7n24nsy3gyzrxa6llx81pvsjqcwi0a4qdv34dpcq483aclp2r";
   };
 
+  buildInputs = [ desktopItem ];
+
   dontBuild = true;
   dontPatchELF = true;
-
-  desktopItem = makeDesktopItem {
-    name = "wasabi";
-    exec = "wasabiwallet";
-    desktopName = "Wasabi";
-    genericName = "Bitcoin wallet";
-    comment = meta.description;
-    categories = "Network;Utility;";
-  };
 
   installPhase = ''
     mkdir -p $out/opt/${pname} $out/bin $out/share/applications
@@ -53,7 +55,6 @@ stdenv.mkDerivation rec {
       done
     patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" wassabee
     ln -s $out/opt/${pname}/wassabee $out/bin/${pname}
-    cp -v $desktopItem/share/applications/* $out/share/applications
   '';
 
   meta = with stdenv.lib; {

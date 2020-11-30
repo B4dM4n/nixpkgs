@@ -1,6 +1,16 @@
 { fetchurl, stdenv, glib, xorg, cairo, gtk2, makeDesktopItem }:
 let
   libPath = stdenv.lib.makeLibraryPath [glib xorg.libX11 gtk2 cairo];
+
+  desktopItem = makeDesktopItem {
+    name = "sublime2";
+    exec = "sublime2 %F";
+    comment = meta.description;
+    desktopName = "Sublime Text";
+    genericName = "Text Editor";
+    categories = "TextEditor;Development;";
+    icon = "sublime_text";
+  };
 in
 
 stdenv.mkDerivation rec {
@@ -44,18 +54,8 @@ stdenv.mkDerivation rec {
       cp -v $out/sublime/Icon/$x/* $out/share/icons/hicolor/$x/apps
     done
 
-    ln -sv "${desktopItem}/share/applications" $out/share
+    ${desktopItem.install} $out
   '';
-
-  desktopItem = makeDesktopItem {
-    name = "sublime2";
-    exec = "sublime2 %F";
-    comment = meta.description;
-    desktopName = "Sublime Text";
-    genericName = "Text Editor";
-    categories = "TextEditor;Development;";
-    icon = "sublime_text";
-  };
 
   meta = {
     description = "Sophisticated text editor for code, markup and prose";

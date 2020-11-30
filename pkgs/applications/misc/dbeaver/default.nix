@@ -5,10 +5,7 @@
 # The build process is almost like eclipse's.
 # See `pkgs/applications/editors/eclipse/*.nix`
 
-stdenv.mkDerivation rec {
-  pname = "dbeaver-ce";
-  version = "7.3.0";
-
+let
   desktopItem = makeDesktopItem {
     name = "dbeaver";
     exec = "dbeaver";
@@ -18,10 +15,14 @@ stdenv.mkDerivation rec {
     genericName = "SQL Integrated Development Environment";
     categories = "Development;";
   };
+in
+stdenv.mkDerivation rec {
+  pname = "dbeaver-ce";
+  version = "7.3.0";
 
   buildInputs = [
     fontconfig freetype glib gtk3
-    jdk libX11 libXrender libXtst zlib
+    jdk libX11 libXrender libXtst zlib desktopItem
   ];
 
   nativeBuildInputs = [
@@ -45,10 +46,6 @@ stdenv.mkDerivation rec {
       --prefix PATH : ${jdk}/bin \
       --prefix LD_LIBRARY_PATH : ${stdenv.lib.makeLibraryPath ([ glib gtk3 libXtst ])} \
       --prefix XDG_DATA_DIRS : "$GSETTINGS_SCHEMAS_PATH"
-
-    # Create desktop item.
-    mkdir -p $out/share/applications
-    cp ${desktopItem}/share/applications/* $out/share/applications
 
     mkdir -p $out/share/pixmaps
     ln -s $out/dbeaver/icon.xpm $out/share/pixmaps/dbeaver.xpm

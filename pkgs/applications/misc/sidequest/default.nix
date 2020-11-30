@@ -26,11 +26,9 @@
 				tar -xJf "$src" -C "$out/lib/SideQuest" --strip-components 1
 
 				ln -s "$out/lib/SideQuest/sidequest" "$out/bin"
+				${desktopItem.install} "$out"
 
 				fixupPhase
-
-				# mkdir -p "$out/share/applications"
-				# ln -s "${desktopItem}/share/applications/*" "$out/share/applications"
 
 				patchelf \
 					--set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
@@ -61,8 +59,7 @@
 		];
 
 		extraInstallCommands = ''
-			mkdir -p "$out/share/applications"
-			ln -s ${desktopItem}/share/applications/* "$out/share/applications"
+			${desktopItem.install} "$out"
 		'';
 
 		runScript = "sidequest";

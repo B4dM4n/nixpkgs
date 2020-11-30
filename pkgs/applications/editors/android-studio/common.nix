@@ -213,5 +213,5 @@ in runCommand
     chmod +x $out/bin/${pname}
 
     ln -s ${androidStudio}/bin/studio.png $out/share/pixmaps/${drvName}.png
-    ln -s ${desktopItem}/share/applications $out/share/applications
+    ${desktopItem.install} $out
   ''

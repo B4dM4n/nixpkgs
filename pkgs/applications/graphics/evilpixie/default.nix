@@ -36,6 +36,7 @@ in mkDerivation rec {
   ];
 
   buildInputs = [
+    desktopItem
     qtbase
     libpng
     giflib
@@ -43,7 +44,6 @@ in mkDerivation rec {
   ];
 
   postInstall = ''
-    ln -s ${desktopItem}/share/applications $out/share
     install -Dm 444 icon_128x128.png $out/share/icons/hicolor/128x128/apps/evilpixie.png
   '';
 
@@ -56,4 +56,3 @@ in mkDerivation rec {
     platforms = platforms.all;
   };
 }
-

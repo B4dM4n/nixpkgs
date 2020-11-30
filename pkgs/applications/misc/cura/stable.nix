@@ -2,15 +2,6 @@
 let
   py = python27Packages;
   version = "15.04";
-in
-stdenv.mkDerivation rec {
-  pname = "cura";
-  inherit version;
-
-  src = fetchurl {
-    url = "https://github.com/daid/Cura/archive/${version}.tar.gz";
-    sha256 = "0xbjvzhp8wzq9lnpmcg1fjf7j5h39bj5463sd5c8jzdjl96izizl";
-  };
 
   desktopItem = makeDesktopItem {
     name = "Cura";
@@ -21,6 +12,15 @@ stdenv.mkDerivation rec {
     genericName = "3D printing host software";
     categories = "GNOME;GTK;Utility;";
   };
+in
+stdenv.mkDerivation rec {
+  pname = "cura";
+  inherit version;
+
+  src = fetchurl {
+    url = "https://github.com/daid/Cura/archive/${version}.tar.gz";
+    sha256 = "0xbjvzhp8wzq9lnpmcg1fjf7j5h39bj5463sd5c8jzdjl96izizl";
+  };
 
   python_deps = with py; [ pyopengl pyserial numpy wxPython30 power setuptools ];
 
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = python_deps;
 
-  buildInputs = [ curaengine py.wrapPython ];
+  buildInputs = [ curaengine py.wrapPython desktopItem ];
 
   configurePhase = "";
   buildPhase = "";
@@ -57,9 +57,6 @@ stdenv.mkDerivation rec {
     # Make it find CuraEngine.
     echo "def getEngineFilename(): return '${curaengine}/bin/CuraEngine'" >> $site_packages/Cura/util/sliceEngine.py
 
-    # Install desktop item.
-    mkdir -p "$out"/share/applications
-    cp "$desktopItem"/share/applications/* "$out"/share/applications/
     mkdir -p "$out"/share/icons
     ln -s "$resources/images/c.png" "$out"/share/icons/cura.png
   '';

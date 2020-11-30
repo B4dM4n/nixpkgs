@@ -153,8 +153,8 @@ in buildFHSUserEnv rec {
       "vsim" "vlog" "vlib"
     ];
   in ''
-    mkdir -p $out/share/applications $out/share/icons/128x128
-    ln -s ${desktopItem}/share/applications/* $out/share/applications
+    mkdir -p $out/share/icons/128x128
+    ${desktopItem.install} $out
     ln -s ${quartus}/licenses/images/dc_quartus_panel_logo.png $out/share/icons/128x128/quartus.png
 
     mkdir -p $out/quartus/bin $out/quartus/sopc_builder/bin $out/modelsim_ase/bin

@@ -1,4 +1,4 @@
-{ stdenv, makeDesktopItem, fetchurl, unzip
+{ stdenv, fetchurl, unzip
 , gdk-pixbuf, glib, gtk3, atk, at-spi2-atk, pango, cairo, freetype, fontconfig, dbus, nss, nspr, alsaLib, cups, expat, udev, gnome3
 , xorg, mozjpeg, makeWrapper, wrapGAppsHook, libuuid, at-spi2-core
 }:
@@ -45,16 +45,6 @@ stdenv.mkDerivation rec {
     libXScrnSaver
     libuuid
   ]);
-
-  desktopItem = makeDesktopItem {
-    name = "Avocode";
-    exec = "avocode";
-    icon = "avocode";
-    desktopName = "Avocode";
-    genericName = "Design Inspector";
-    categories = "Development;";
-    comment = "The bridge between designers and developers";
-  };
 
   nativeBuildInputs = [makeWrapper wrapGAppsHook];
   buildInputs = [ unzip gtk3 gnome3.adwaita-icon-theme ];

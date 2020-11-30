@@ -16,7 +16,27 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig makeWrapper ];
 
-  buildInputs = [
+  buildInputs = let
+    desktopItem = makeDesktopItem {
+      name = "vis";
+      exec = "vis %U";
+      type = "Application";
+      icon = "accessories-text-editor";
+      comment = meta.description;
+      desktopName = "vis";
+      genericName = "Text editor";
+      categories = stdenv.lib.concatStringsSep ";" [
+        "Application" "Development" "IDE"
+      ];
+      mimeType = stdenv.lib.concatStringsSep ";" [
+        "text/plain" "application/octet-stream"
+      ];
+      startupNotify = "false";
+      terminal = "true";
+    };
+  in
+  [
+    desktopItem
     ncurses
     libtermkey
     lua
@@ -34,32 +54,12 @@ stdenv.mkDerivation rec {
   LUA_PATH="${lpeg}/share/lua/${lua.luaversion}/?.lua";
 
   postInstall = ''
-    mkdir -p "$out/share/applications"
-    cp $desktopItem/share/applications/* $out/share/applications
     echo wrapping $out/bin/vis with runtime environment
     wrapProgram $out/bin/vis \
       --prefix LUA_CPATH ';' "${lpeg}/lib/lua/${lua.luaversion}/?.so" \
       --prefix LUA_PATH ';' "${lpeg}/share/lua/${lua.luaversion}/?.lua" \
       --prefix VIS_PATH : "\$HOME/.config:$out/share/vis"
   '';
-
-  desktopItem = makeDesktopItem {
-    name = "vis";
-    exec = "vis %U";
-    type = "Application";
-    icon = "accessories-text-editor";
-    comment = meta.description;
-    desktopName = "vis";
-    genericName = "Text editor";
-    categories = stdenv.lib.concatStringsSep ";" [
-      "Application" "Development" "IDE"
-    ];
-    mimeType = stdenv.lib.concatStringsSep ";" [
-      "text/plain" "application/octet-stream"
-    ];
-    startupNotify = "false";
-    terminal = "true";
-  };
 
   meta = with stdenv.lib; {
     description = "A vim like editor";

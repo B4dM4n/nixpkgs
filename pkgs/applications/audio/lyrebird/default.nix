@@ -36,7 +36,7 @@ python3Packages.buildPythonApplication rec {
 
   nativeBuildInputs = [ wrapGAppsHook ];
 
-  buildInputs = [ gtk3 gobject-introspection sox ];
+  buildInputs = [ gtk3 gobject-introspection sox desktopItem ];
 
   dontWrapGApps = true;
   makeWrapperArgs = [
@@ -49,7 +49,6 @@ python3Packages.buildPythonApplication rec {
   installPhase = ''
     mkdir -p $out/{bin,share/{applications,lyrebird}}
     cp -at $out/share/lyrebird/ app icon.png
-    cp -at $out/share/applications/ ${desktopItem}
     install -Dm755 app.py $out/bin/lyrebird
   '';
 

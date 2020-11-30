@@ -4,9 +4,7 @@
 
 { name, src ? builtins.getAttr stdenv.hostPlatform.system sources, sources ? null, description }:
 
-stdenv.mkDerivation rec {
-  inherit name src;
-
+let
   desktopItem = makeDesktopItem {
     name = "Eclipse";
     exec = "eclipse";
@@ -16,6 +14,9 @@ stdenv.mkDerivation rec {
     genericName = "Integrated Development Environment";
     categories = "Development;";
   };
+in
+stdenv.mkDerivation rec {
+  inherit name src;
 
   buildInputs = [
     fontconfig freetype glib gsettings-desktop-schemas gtk jdk libX11
@@ -46,8 +47,7 @@ stdenv.mkDerivation rec {
       --add-flags "-configuration \$HOME/.eclipse/''${productId}_$productVersion/configuration"
 
     # Create desktop item.
-    mkdir -p $out/share/applications
-    cp ${desktopItem}/share/applications/* $out/share/applications
+    ${desktopItem.install} $out
     mkdir -p $out/share/pixmaps
     ln -s $out/eclipse/icon.xpm $out/share/pixmaps/eclipse.xpm
 

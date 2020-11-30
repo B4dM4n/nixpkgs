@@ -16,9 +16,20 @@ stdenv.mkDerivation rec {
     sha256 = "09i88v3wacmx7f96dmq0l3afpyv95lh6jrx16xzm0jd1szdrhn5j";
   };
 
-  buildInputs = [
+  buildInputs = let
+    desktopItem = makeDesktopItem {
+      name = name;
+      exec = "xournal";
+      icon = "xournal";
+      desktopName = "Xournal";
+      comment = meta.description;
+      categories = "Office;Graphics;";
+      mimeType = "application/pdf;application/x-xoj";
+      genericName = "PDF Editor";
+    };
+  in [
     ghostscript atk gtk2 glib fontconfig freetype
-    libgnomecanvas
+    libgnomecanvas desktopItem
     pango libX11 xorgproto zlib poppler
   ] ++ stdenv.lib.optionals (!stdenv.isDarwin) [
     libgnomeprint libgnomeprintui
@@ -28,17 +39,6 @@ stdenv.mkDerivation rec {
 
   NIX_LDFLAGS = "-lz"
     + stdenv.lib.optionalString (!isGdkQuartzBackend) " -lX11";
-
-  desktopItem = makeDesktopItem {
-    name = name;
-    exec = "xournal";
-    icon = "xournal";
-    desktopName = "Xournal";
-    comment = meta.description;
-    categories = "Office;Graphics;";
-    mimeType = "application/pdf;application/x-xoj";
-    genericName = "PDF Editor";
-  };
 
   postInstall=''
       mkdir --parents $out/share/mime/packages

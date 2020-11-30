@@ -1,21 +1,6 @@
 { lib, mkDerivation, python3, fetchFromGitHub, makeWrapper, wrapQtAppsHook, makeDesktopItem }:
 
-mkDerivation rec {
-  pname = "leo-editor";
-  version = "6.2.1";
-
-  src = fetchFromGitHub {
-    owner = "leo-editor";
-    repo = "leo-editor";
-    rev = version;
-    sha256 = "1s9jvxwzsl32clp78g92nq9p2byf08libr5widl1jnkv1cpkbvh9";
-  };
-
-  dontBuild = true;
-
-  nativeBuildInputs = [ wrapQtAppsHook makeWrapper python3 ];
-  propagatedBuildInputs = with python3.pkgs; [ pyqt5 docutils ];
-
+let
   desktopItem = makeDesktopItem {
     name = "leo-editor";
     exec = "leo %U";
@@ -39,13 +24,27 @@ mkDerivation rec {
       "application/xml" "text/xml" "text/x-asm"
     ];
   };
+in
+mkDerivation rec {
+  pname = "leo-editor";
+  version = "6.2.1";
+
+  src = fetchFromGitHub {
+    owner = "leo-editor";
+    repo = "leo-editor";
+    rev = version;
+    sha256 = "1s9jvxwzsl32clp78g92nq9p2byf08libr5widl1jnkv1cpkbvh9";
+  };
+
+  dontBuild = true;
+
+  nativeBuildInputs = [ wrapQtAppsHook makeWrapper python3 ];
+  propagatedBuildInputs = with python3.pkgs; [ pyqt5 docutils ];
+  buildInputs = [ desktopItem ];
 
   installPhase = ''
     mkdir -p "$out/share/icons/hicolor/32x32/apps"
     cp leo/Icons/leoapp32.png "$out/share/icons/hicolor/32x32/apps"
-
-    mkdir -p "$out/share/applications"
-    cp $desktopItem/share/applications/* $out/share/applications
 
     mkdir -p $out/share/leo-editor
     mv * $out/share/leo-editor

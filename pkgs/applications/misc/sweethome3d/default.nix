@@ -34,11 +34,11 @@ let
       patchelf --set-rpath ${libXxf86vm}/lib lib/java3d-1.6/linux/i586/libnativewindow_x11.so
     '';
 
-    buildInputs = [ ant jdk makeWrapper p7zip gtk3 gsettings-desktop-schemas ];
+    buildInputs = [ ant jdk makeWrapper p7zip gtk3 gsettings-desktop-schemas sweethome3dItem ];
 
     buildPhase = ''
       ant furniture textures help
-      mkdir -p $out/share/{java,applications}
+      mkdir -p $out/share/java
       mv "build/"*.jar $out/share/java/.
       ant
     '';
@@ -48,8 +48,6 @@ let
       cp install/${module}-${version}.jar $out/share/java/.
 
       ${installIcons pname icons}
-
-      cp "${sweethome3dItem}/share/applications/"* $out/share/applications
 
       # MESA_GL_VERSION_OVERRIDE is needed since the update from MESA 19.3.3 to 20.0.2:
       # without it a "Profiles [GL4bc, GL3bc, GL2, GLES1] not available on device null"

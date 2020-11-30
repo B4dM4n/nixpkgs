@@ -13,12 +13,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ jre ];
-
-  phases = [ "unpackPhase" "installPhase" "fixupPhase" ];
-
-  installPhase = let
-
+  buildInputs = let
     desktopItem = makeDesktopItem {
       name = "ganttproject";
       exec = "ganttproject";
@@ -28,11 +23,14 @@ stdenv.mkDerivation rec {
       comment = meta.description;
       categories = "Office;";
     };
+  in [ jre desktopItem ];
 
+  phases = [ "unpackPhase" "installPhase" "fixupPhase" ];
+
+  installPhase = let
     javaOptions = [
       "-Dawt.useSystemAAFontSettings=on"
     ];
-
   in ''
     mkdir -pv "$out/share/ganttproject"
     cp -rv *  "$out/share/ganttproject"
@@ -43,8 +41,6 @@ stdenv.mkDerivation rec {
       --set _JAVA_OPTIONS "${builtins.toString javaOptions}"
 
     mv -v "$out/share/ganttproject/ganttproject" "$out/bin"
-
-    cp -rv "${desktopItem}/share/applications" "$out/share"
   '';
 
   meta = with stdenv.lib; {

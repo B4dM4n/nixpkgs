@@ -13,23 +13,21 @@ stdenv.mkDerivation rec {
 
   phases = [ "unpackPhase" "installPhase" ];
 
-  installPhase = let
+  buildInputs = let desktopItem = makeDesktopItem {
+    name = "swingsane";
+    exec = "swingsane";
+    icon = "swingsane";
+    desktopName = "SwingSane";
+    genericName = "Scan from local or remote SANE servers";
+    comment = meta.description;
+    categories = "Office;";
+  }; in [ desktopItem ];
 
+  installPhase = let
     execWrapper = ''
       #!${runtimeShell}
       exec ${jre}/bin/java -jar $out/share/java/swingsane/swingsane-${version}.jar "$@"
     '';
-
-    desktopItem = makeDesktopItem {
-      name = "swingsane";
-      exec = "swingsane";
-      icon = "swingsane";
-      desktopName = "SwingSane";
-      genericName = "Scan from local or remote SANE servers";
-      comment = meta.description;
-      categories = "Office;";
-    };
-
   in ''
     install -v -m 755    -d $out/share/java/swingsane/
     install -v -m 644 *.jar $out/share/java/swingsane/

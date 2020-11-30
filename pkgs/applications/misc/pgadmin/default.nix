@@ -1,5 +1,16 @@
 { stdenv, fetchurl, fetchpatch, postgresql, wxGTK, libxml2, libxslt, openssl, zlib, makeDesktopItem }:
-
+let
+  desktopItem = makeDesktopItem {
+    name = "pgAdmin";
+    desktopName = "pgAdmin III";
+    genericName = "SQL Administration";
+    exec = "pgadmin3";
+    icon = "pgAdmin3";
+    type = "Application";
+    categories = "Development;";
+    mimeType = "text/html";
+  };
+in
 stdenv.mkDerivation rec {
   pname = "pgadmin3";
   version = "1.22.2";
@@ -11,7 +22,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  buildInputs = [ postgresql wxGTK openssl zlib ];
+  buildInputs = [ postgresql wxGTK openssl zlib desktopItem ];
 
   patches = [
     (fetchpatch {
@@ -39,20 +50,8 @@ stdenv.mkDerivation rec {
     platforms = platforms.unix;
   };
 
-  postFixup = let
-    desktopItem = makeDesktopItem {
-      name = "pgAdmin";
-      desktopName = "pgAdmin III";
-      genericName = "SQL Administration";
-      exec = "pgadmin3";
-      icon = "pgAdmin3";
-      type = "Application";
-      categories = "Development;";
-      mimeType = "text/html";
-    };
-  in ''
+  postFixup = ''
     mkdir -p $out/share/pixmaps;
     cp pgadmin/include/images/pgAdmin3.png $out/share/pixmaps/;
-    cp -rv ${desktopItem}/share/applications $out/share/
   '';
 }

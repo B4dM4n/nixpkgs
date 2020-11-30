@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
   '';
 
   nativeBuildInputs = [ wrapGAppsHook ];
-  buildInputs = [ glib ];
+  buildInputs = [ glib desktopItem ];
 
   preFixup = ''
     gappsWrapperArgs+=(--set JAVA_HOME "${jdk11}" --set PDFSAM_JAVA_PATH "${jdk11}")
@@ -24,7 +24,6 @@ stdenv.mkDerivation rec {
   installPhase = ''
     cp -R opt/pdfsam-basic/ $out/
     mkdir -p "$out"/share/icons
-    cp --recursive ${desktopItem}/share/applications $out/share
     cp $out/icon.svg "$out"/share/icons/pdfsam-basic.svg
   '';
 

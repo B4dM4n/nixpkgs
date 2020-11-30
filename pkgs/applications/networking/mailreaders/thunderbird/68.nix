@@ -4,7 +4,6 @@
 , bzip2
 , cargo
 , common-updater-scripts
-, copyDesktopItems
 , coreutils
 , curl
 , dbus
@@ -69,7 +68,29 @@
 }:
 
 assert waylandSupport -> gtk3Support == true;
-
+let
+  desktopItem = makeDesktopItem {
+    categories = lib.concatStringsSep ";" [ "Application" "Network" ];
+    desktopName = "Thunderbird";
+    genericName = "Mail Reader";
+    name = "thunderbird";
+    exec = "thunderbird %U";
+    icon = "$out/lib/thunderbird/chrome/icons/default/default256.png";
+    mimeType = lib.concatStringsSep ";" [
+      # Email
+      "x-scheme-handler/mailto"
+      "message/rfc822"
+      # Feeds
+      "x-scheme-handler/feed"
+      "application/rss+xml"
+      "application/x-extension-rss"
+      # Newsgroups
+      "x-scheme-handler/news"
+      "x-scheme-handler/snews"
+      "x-scheme-handler/nntp"
+    ];
+  };
+in
 stdenv.mkDerivation rec {
   pname = "thunderbird";
   version = "68.12.0";
@@ -84,7 +105,6 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     autoconf213
     cargo
-    copyDesktopItems
     gnused
     llvmPackages.llvm
     m4
@@ -104,6 +124,7 @@ stdenv.mkDerivation rec {
     bzip2
     dbus
     dbus-glib
+    desktopItem
     file
     fontconfig
     freetype
@@ -264,29 +285,6 @@ stdenv.mkDerivation rec {
 
   doCheck = false;
 
-  desktopItems = [
-    (makeDesktopItem {
-      categories = lib.concatStringsSep ";" [ "Application" "Network" ];
-      desktopName = "Thunderbird";
-      genericName = "Mail Reader";
-      name = "thunderbird";
-      exec = "thunderbird %U";
-      icon = "$out/lib/thunderbird/chrome/icons/default/default256.png";
-      mimeType = lib.concatStringsSep ";" [
-        # Email
-        "x-scheme-handler/mailto"
-        "message/rfc822"
-        # Feeds
-        "x-scheme-handler/feed"
-        "application/rss+xml"
-        "application/x-extension-rss"
-        # Newsgroups
-        "x-scheme-handler/news"
-        "x-scheme-handler/snews"
-        "x-scheme-handler/nntp"
-      ];
-    })
-  ];
   postInstall = ''
     # TODO: Move to a dev output?
     rm -rf $out/include $out/lib/thunderbird-devel-* $out/share/idl

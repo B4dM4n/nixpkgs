@@ -32,15 +32,12 @@ in mkDerivation rec {
     qmake
   ];
   buildInputs = [
+    desktopItem
     qtbase
     qtwebsockets
   ];
 
   qmakeFlags = [ "michabo.pro" "DESTDIR=${placeholder "out"}/bin" ];
-
-  postInstall = ''
-    ln -s ${desktopItem}/share $out/share
-  '';
 
   meta = with lib; {
     description = "A native desktop app for Pleroma and Mastodon servers";
@@ -50,4 +47,3 @@ in mkDerivation rec {
     platforms = platforms.all;
   };
 }
-

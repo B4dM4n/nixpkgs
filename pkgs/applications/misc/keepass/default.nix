@@ -1,6 +1,21 @@
 { stdenv, lib, fetchurl, buildDotnetPackage, substituteAll, makeWrapper, makeDesktopItem,
   unzip, icoutils, gtk2, xorg, xdotool, xsel, coreutils, unixtools, glib, plugins ? [] }:
 
+let
+  desktopItem = makeDesktopItem {
+    name = "keepass";
+    exec = "keepass";
+    comment = "Password manager";
+    icon = "keepass";
+    desktopName = "Keepass";
+    genericName = "Password manager";
+    categories = "Utility;";
+    mimeType = stdenv.lib.concatStringsSep ";" [
+      "application/x-keepass2"
+      ""
+    ];
+  };
+in
 with builtins; buildDotnetPackage rec {
   baseName = "keepass";
   version = "2.46";
@@ -12,7 +27,7 @@ with builtins; buildDotnetPackage rec {
 
   sourceRoot = ".";
 
-  buildInputs = [ unzip makeWrapper icoutils ];
+  buildInputs = [ unzip makeWrapper icoutils desktopItem ];
 
   patches = [
     (substituteAll {
@@ -61,19 +76,6 @@ with builtins; buildDotnetPackage rec {
     ' {} \;
   '';
 
-  desktopItem = makeDesktopItem {
-    name = "keepass";
-    exec = "keepass";
-    comment = "Password manager";
-    icon = "keepass";
-    desktopName = "Keepass";
-    genericName = "Password manager";
-    categories = "Utility;";
-    mimeType = stdenv.lib.concatStringsSep ";" [
-      "application/x-keepass2"
-      ""
-    ];
-  };
 
   outputFiles = [ "Build/KeePass/Release/*" "Build/KeePassLib/Release/*" ];
   dllFiles = [ "KeePassLib.dll" ];
@@ -92,8 +94,6 @@ with builtins; buildDotnetPackage rec {
     extractFDeskIcons = ./extractWinRscIconsToStdFreeDesktopDir.sh;
   in
   ''
-    mkdir -p "$out/share/applications"
-    cp ${desktopItem}/share/applications/* $out/share/applications
     wrapProgram $out/bin/keepass \
       --prefix PATH : "$binPaths" \
       --prefix LD_LIBRARY_PATH : "$dynlibPath"

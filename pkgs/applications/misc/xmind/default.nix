@@ -20,6 +20,7 @@ stdenv.mkDerivation rec {
   patches = [ ./java-env-config-fixes.patch ];
 
   nativeBuildInputs = [ makeWrapper ];
+  buildInputs = [ desktopItem ];
 
   dontBuild = true;
   dontPatchELF = true;
@@ -42,11 +43,10 @@ stdenv.mkDerivation rec {
       then "XMind_i386"
       else "XMind_amd64";
   in ''
-    mkdir -p $out/{bin,libexec/configuration/,share/{applications/,fonts/,icons/hicolor/scalable/apps/}}
+    mkdir -p $out/{bin,libexec/configuration/,share/{fonts/,icons/hicolor/scalable/apps/}}
     cp -r ${targetDir}/{configuration,p2,XMind{,.ini}} $out/libexec
     cp -r {plugins,features} $out/libexec/
     cp -r fonts $out/share/fonts/
-    cp "${desktopItem}/share/applications/XMind.desktop" $out/share/applications/XMind.desktop
     cp ${srcIcon} $out/share/icons/hicolor/scalable/apps/xmind.png
 
     patchelf --set-interpreter $(cat ${stdenv.cc}/nix-support/dynamic-linker) \

@@ -1,7 +1,6 @@
 { stdenv
 , fetchurl
 , nixosTests
-, copyDesktopItems
 , makeDesktopItem
 , makeWrapper
 , wrapGAppsHook
@@ -100,8 +99,8 @@ stdenv.mkDerivation rec {
     sha256 = "0w8z21ml79kblv20wh5lz037g130pxkgs8ll9s3bi94zn2pbrhim";
   };
 
-  nativeBuildInputs = [ makeWrapper wrapGAppsHook copyDesktopItems ];
-  buildInputs = [ gobject-introspection ];
+  nativeBuildInputs = [ makeWrapper wrapGAppsHook ];
+  buildInputs = [ gobject-introspection desktopItem ];
 
   sourceRoot = ".";
 
@@ -142,8 +141,6 @@ stdenv.mkDerivation rec {
       --run "cd /tmp" \
       "''${gappsWrapperArgs[@]}"
   '';
-
-  desktopItems = [ desktopItem ];
 
   meta = with stdenv.lib; {
     description = "Official launcher for Minecraft, a sandbox-building game";

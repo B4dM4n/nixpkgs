@@ -33,6 +33,8 @@ stdenv.mkDerivation rec {
 
   phases = [ "installPhase" ];
 
+  buildInputs = [ desktopItem ];
+
   installPhase = ''
     tar xf ${src}
     mkdir -p $out/{bin,share/LightTable}
@@ -50,9 +52,6 @@ stdenv.mkDerivation rec {
         --replace "/usr/lib/x86_64-linux-gnu" "${lib.getLib systemd}/lib" \
         --replace "/lib/x86_64-linux-gnu" "$out/share/LightTable" \
         --replace 'HERE=`dirname $(readlink -f $0)`' "HERE=$out/share/LightTable"
-
-    mkdir -p "$out"/share/applications
-    cp "${desktopItem}/share/applications/LightTable.desktop" "$out"/share/applications/
   '';
 
   meta = with stdenv.lib; {

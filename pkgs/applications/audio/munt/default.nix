@@ -19,14 +19,10 @@ in mkDerivation rec {
     sha256 = "0bszhkbz24hhx32f973l6h5lkyn4lxhqrckiwmv765d1sba8n5bk";
   };
 
-  postInstall = ''
-    ln -s ${desktopItem}/share/applications $out/share
-  '';
-
   dontFixCmake = true;
 
   nativeBuildInputs = [ cmake ];
-  buildInputs = [ qtbase alsaLib libjack2 ];
+  buildInputs = [ qtbase alsaLib libjack2 desktopItem ];
 
   meta = with stdenv.lib; {
     description = "Multi-platform software synthesiser emulating Roland MT-32, CM-32L, CM-64 and LAPC-I devices";

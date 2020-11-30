@@ -9,7 +9,17 @@
 assert enableGUI -> qtbase != null && qtsvg != null && freetype != null;
 assert enablePDFtoPPM -> freetype != null;
 assert enablePrinting -> cups != null;
-
+let
+  desktopItem = makeDesktopItem {
+    name = "xpdf";
+    desktopName = "Xpdf";
+    comment = "Views Adobe PDF files";
+    icon = "xpdf";
+    exec = "xpdf %f";
+    categories = "Office;";
+    terminal = "false";
+  };
+in
 stdenv.mkDerivation rec {
   pname = "xpdf";
   version = "4.02";
@@ -31,25 +41,14 @@ stdenv.mkDerivation rec {
   cmakeFlags = ["-DSYSTEM_XPDFRC=/etc/xpdfrc" "-DA4_PAPER=ON" "-DOPI_SUPPORT=ON"]
     ++ stdenv.lib.optional (!enablePrinting) "-DXPDFWIDGET_PRINTING=OFF";
 
-  buildInputs = [ zlib libpng ] ++
+  buildInputs = [ zlib libpng desktopItem ] ++
     stdenv.lib.optional enableGUI qtbase ++
     stdenv.lib.optional enablePrinting cups ++
     stdenv.lib.optional enablePDFtoPPM freetype;
 
   hardeningDisable = [ "format" ];
 
-  desktopItem = makeDesktopItem {
-    name = "xpdf";
-    desktopName = "Xpdf";
-    comment = "Views Adobe PDF files";
-    icon = "xpdf";
-    exec = "xpdf %f";
-    categories = "Office;";
-    terminal = "false";
-  };
-
   postInstall = ''
-    install -Dm644 ${desktopItem}/share/applications/xpdf.desktop $out/share/applications/xpdf.desktop
     install -Dm644 $src/xpdf-qt/xpdf-icon.svg $out/share/pixmaps/xpdf.svg
   '';
 

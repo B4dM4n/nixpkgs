@@ -12,6 +12,17 @@ let
   version = "${verMajor}.${verMinor}.${verPatch}";
   ginVer = "2.1.2";
   gwtVer = "2.8.1";
+
+  desktopItem = makeDesktopItem {
+    name = "${pname}-${version}";
+    exec = "rstudio %F";
+    icon = "rstudio";
+    desktopName = "RStudio";
+    genericName = "IDE";
+    comment = meta.description;
+    categories = "Development;";
+    mimeType = "text/x-r-source;text/x-r;text/x-R;text/x-r-doc;text/x-r-sweave;text/x-r-markdown;text/x-r-html;text/x-r-presentation;application/x-r-data;application/x-r-project;text/x-r-history;text/x-r-profile;text/x-tex;text/x-markdown;text/html;text/css;text/javascript;text/x-chdr;text/x-csrc;text/x-c++hdr;text/x-c++src;";
+  };
 in
 mkDerivation rec {
   pname = "RStudio";
@@ -20,7 +31,7 @@ mkDerivation rec {
   nativeBuildInputs = [ cmake unzip ant jdk makeWrapper pandoc ];
 
   buildInputs = [ boost zlib openssl R qtbase qtxmlpatterns qtsensors
-                  qtwebengine qtwebchannel libuuid ];
+                  qtwebengine qtwebchannel libuuid desktopItem ];
 
   src = fetchFromGitHub {
     owner = "rstudio";
@@ -113,23 +124,10 @@ mkDerivation rec {
 
   cmakeFlags = [ "-DRSTUDIO_TARGET=Desktop" "-DQT_QMAKE_EXECUTABLE=$NIX_QT5_TMP/bin/qmake" ];
 
-  desktopItem = makeDesktopItem {
-    name = "${pname}-${version}";
-    exec = "rstudio %F";
-    icon = "rstudio";
-    desktopName = "RStudio";
-    genericName = "IDE";
-    comment = meta.description;
-    categories = "Development;";
-    mimeType = "text/x-r-source;text/x-r;text/x-R;text/x-r-doc;text/x-r-sweave;text/x-r-markdown;text/x-r-html;text/x-r-presentation;application/x-r-data;application/x-r-project;text/x-r-history;text/x-r-profile;text/x-tex;text/x-markdown;text/html;text/css;text/javascript;text/x-chdr;text/x-csrc;text/x-c++hdr;text/x-c++src;";
-  };
-
   qtWrapperArgs = [ ''--suffix PATH : ${gnumake}/bin'' ];
 
   postInstall = ''
-      mkdir $out/share
-      cp -r ${desktopItem}/share/applications $out/share
-      mkdir $out/share/icons
+      mkdir -p $out/share/icons
       ln $out/rstudio.png $out/share/icons
   '';
 

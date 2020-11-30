@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ jdk ];
+  buildInputs = [ jdk desktopItem ];
 
   desktopItem = makeDesktopItem {
     name = "gpsprune";
@@ -27,8 +27,6 @@ stdenv.mkDerivation rec {
     cp -v $src $out/share/java/gpsprune.jar
     makeWrapper ${jdk}/bin/java $out/bin/gpsprune \
       --add-flags "-jar $out/share/java/gpsprune.jar"
-    mkdir -p $out/share/applications
-    cp $desktopItem/share/applications"/"* $out/share/applications
     mkdir -p $out/share/pixmaps
     ${unzip}/bin/unzip -p $src tim/prune/gui/images/window_icon_64.png > $out/share/pixmaps/gpsprune.png
   '';

@@ -5,7 +5,20 @@ let
   system = stdenv.hostPlatform.system;
   electron = electron_7;
 
-in stdenv.mkDerivation rec {
+  desktopItem = makeDesktopItem {
+    name = "whirlpool-gui";
+    exec = "whirlpool-gui";
+    icon = "whirlpool-gui";
+    desktopName = "Whirlpool";
+    genericName = "Whirlpool";
+    comment = meta.description;
+    categories = "Network;";
+    extraEntries = ''
+      StartupWMClass=whrilpool-gui
+    '';
+  };
+in
+stdenv.mkDerivation rec {
   pname = "whirlpool-gui";
   version = "0.10.1";
 
@@ -37,6 +50,7 @@ in stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ makeWrapper nodejs yarn ];
+  buildInputs = [ desktopItem ];
 
   configurePhase = ''
     # Yarn and bundler wants a real home directory to write cache, config, etc to
@@ -68,27 +82,11 @@ in stdenv.mkDerivation rec {
     cp -r app/{dist,app.html,main.prod.js,main.prod.js.map,img} $out/libexec/whirlpool-gui/app
     cp -r package.json resources $out/libexec/whirlpool-gui
 
-    # make desktop item
-    ln -s "${desktopItem}/share/applications" "$out/share/applications"
-
     # wrap electron
     makeWrapper '${electron}/bin/electron' "$out/bin/whirlpool-gui" \
       --add-flags "$out/libexec/whirlpool-gui" \
       --prefix PATH : "${jre8}/bin:${tor}/bin"
   '';
-
-  desktopItem = makeDesktopItem {
-    name = "whirlpool-gui";
-    exec = "whirlpool-gui";
-    icon = "whirlpool-gui";
-    desktopName = "Whirlpool";
-    genericName = "Whirlpool";
-    comment = meta.description;
-    categories = "Network;";
-    extraEntries = ''
-      StartupWMClass=whrilpool-gui
-    '';
-  };
 
   passthru.prefetchYarnCache = stdenv.lib.overrideDerivation yarnCache (d: {
     outputHash = stdenv.lib.fakeSha256;

@@ -1,7 +1,16 @@
 { stdenv, lib, fetchurl, makeDesktopItem, dpkg, atk, at-spi2-atk, glib, pango, gdk-pixbuf
 , gtk3, cairo, freetype, fontconfig, dbus, xorg, nss, nspr, alsaLib, cups, expat
 , udev, libpulseaudio, util-linux, makeWrapper }:
-
+let
+  desktopItem = makeDesktopItem {
+    name = "Todoist";
+    exec = "todoist %U";
+    icon = "todoist";
+    comment = "Todoist for Linux";
+    desktopName = "Todoist";
+    categories = "Utility";
+  };
+in
 stdenv.mkDerivation rec {
   pname = "todoist-electron";
   version = "1.24.0";
@@ -11,16 +20,8 @@ stdenv.mkDerivation rec {
     sha256 = "0g35518z6nf6pnfyx4ax75rq8b8br72mi6wv6jzgac9ric1q4h2s";
   };
 
-  desktopItem = makeDesktopItem {
-    name = "Todoist";
-    exec = "todoist %U";
-    icon = "todoist";
-    comment = "Todoist for Linux";
-    desktopName = "Todoist";
-    categories = "Utility";
-  };
-
   nativeBuildInputs = [ makeWrapper dpkg ];
+  buildInputs = [ desktopItem ];
   unpackPhase = ''
     mkdir pkg
     dpkg-deb -x $src pkg
@@ -49,10 +50,8 @@ stdenv.mkDerivation rec {
     makeWrapper $out/opt/Todoist/todoist $out/bin/todoist \
       --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ libpulseaudio udev ]}
 
-    # Desktop item
-    mkdir -p "$out/share"
+    # Remove packaged desktop item
     rm -r "$out/share/applications"
-    cp -r "${desktopItem}/share/applications" "$out/share/applications"
   '';
 
   meta = with lib; {

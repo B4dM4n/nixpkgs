@@ -18,6 +18,15 @@ let
       else if stdenv.hostPlatform.system == "i686-cygwin"   then urlBase + "win32.zip"
       else throw "Unsupported system: ${stdenv.hostPlatform.system}";
 
+  desktopItem = makeDesktopItem {
+    name = "kodestudio";
+    exec = "kodestudio";
+    icon = "kodestudio";
+    comment = "Kode Studio is an IDE for Kha based on Visual Studio Code";
+    desktopName = "Kode Studio";
+    genericName = "Text Editor";
+    categories = "GNOME;GTK;Utility;TextEditor;Development;";
+  };
 in
 
   stdenv.mkDerivation {
@@ -29,17 +38,7 @@ in
         inherit sha256;
     };
 
-    buildInputs = [ makeWrapper libXScrnSaver ];
-
-    desktopItem = makeDesktopItem {
-      name = "kodestudio";
-      exec = "kodestudio";
-      icon = "kodestudio";
-      comment = "Kode Studio is an IDE for Kha based on Visual Studio Code";
-      desktopName = "Kode Studio";
-      genericName = "Text Editor";
-      categories = "GNOME;GTK;Utility;TextEditor;Development;";
-    };
+    buildInputs = [ makeWrapper libXScrnSaver desktopItem ];
 
     sourceRoot = ".";
 

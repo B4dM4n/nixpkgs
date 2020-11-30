@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, autoPatchelfHook, makeDesktopItem, makeWrapper, copyDesktopItems
+{ stdenv, fetchurl, autoPatchelfHook, makeDesktopItem, makeWrapper
 
   # Dynamic Libraries
 , curl, libGL, libX11, libXext, libXmu, libXrandr, libXrender
@@ -27,7 +27,6 @@ in stdenv.mkDerivation {
 
   nativeBuildInputs = [
     autoPatchelfHook
-    copyDesktopItems
     makeWrapper
   ];
 
@@ -40,7 +39,7 @@ in stdenv.mkDerivation {
     libXrandr
     libXrender
     stdenv.cc.cc.lib
-  ];
+  ] ++ builtins.attrValues desktopItems;
 
   dontBuild = true;
   dontConfigure = true;
@@ -116,8 +115,6 @@ in stdenv.mkDerivation {
 
     runHook postInstall
   '';
-
-  desktopItems = builtins.attrValues desktopItems;
 
   meta = with stdenv.lib; {
     description = "An office suite with a word processor, spreadsheet and presentation program";

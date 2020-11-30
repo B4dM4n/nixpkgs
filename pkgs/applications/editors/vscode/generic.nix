@@ -10,6 +10,44 @@
 
 let
   inherit (stdenv.hostPlatform) system;
+
+  desktopItem = makeDesktopItem {
+    name = executableName;
+    desktopName = longName;
+    comment = "Code Editing. Redefined.";
+    genericName = "Text Editor";
+    exec = "${executableName} %F";
+    icon = "code";
+    startupNotify = "true";
+    categories = "Utility;TextEditor;Development;IDE;";
+    mimeType = "text/plain;inode/directory;";
+    extraEntries = ''
+      StartupWMClass=${shortName}
+      Actions=new-empty-window;
+      Keywords=vscode;
+
+      [Desktop Action new-empty-window]
+      Name=New Empty Window
+      Exec=${executableName} --new-window %F
+      Icon=code
+    '';
+  };
+
+  urlHandlerDesktopItem = makeDesktopItem {
+    name = executableName + "-url-handler";
+    desktopName = longName + " - URL Handler";
+    comment = "Code Editing. Redefined.";
+    genericName = "Text Editor";
+    exec = executableName + " --open-url %U";
+    icon = "code";
+    startupNotify = "true";
+    categories = "Utility;TextEditor;Development;IDE;";
+    mimeType = "x-scheme-handler/vscode;";
+    extraEntries = ''
+      NoDisplay=true
+      Keywords=vscode;
+    '';
+  };
 in
   stdenv.mkDerivation {
 
@@ -19,48 +57,10 @@ in
       inherit executableName;
     };
 
-    desktopItem = makeDesktopItem {
-      name = executableName;
-      desktopName = longName;
-      comment = "Code Editing. Redefined.";
-      genericName = "Text Editor";
-      exec = "${executableName} %F";
-      icon = "code";
-      startupNotify = "true";
-      categories = "Utility;TextEditor;Development;IDE;";
-      mimeType = "text/plain;inode/directory;";
-      extraEntries = ''
-        StartupWMClass=${shortName}
-        Actions=new-empty-window;
-        Keywords=vscode;
-
-        [Desktop Action new-empty-window]
-        Name=New Empty Window
-        Exec=${executableName} --new-window %F
-        Icon=code
-      '';
-    };
-
-    urlHandlerDesktopItem = makeDesktopItem {
-      name = executableName + "-url-handler";
-      desktopName = longName + " - URL Handler";
-      comment = "Code Editing. Redefined.";
-      genericName = "Text Editor";
-      exec = executableName + " --open-url %U";
-      icon = "code";
-      startupNotify = "true";
-      categories = "Utility;TextEditor;Development;IDE;";
-      mimeType = "x-scheme-handler/vscode;";
-      extraEntries = ''
-        NoDisplay=true
-        Keywords=vscode;
-      '';
-    };
-
     buildInputs = (if stdenv.isDarwin
       then [ unzip ]
       else [ gtk2 at-spi2-atk wrapGAppsHook ] ++ atomEnv.packages)
-        ++ [ libsecret libXScrnSaver ];
+        ++ [ libsecret libXScrnSaver desktopItem urlHandlerDesktopItem ];
 
     runtimeDependencies = lib.optional (stdenv.isLinux) [ (lib.getLib systemd) fontconfig.lib libdbusmenu ];
 
@@ -79,10 +79,6 @@ in
         cp -r ./* $out/lib/vscode
 
         ln -s $out/lib/vscode/bin/${executableName} $out/bin
-
-        mkdir -p $out/share/applications
-        ln -s $desktopItem/share/applications/${executableName}.desktop $out/share/applications/${executableName}.desktop
-        ln -s $urlHandlerDesktopItem/share/applications/${executableName}-url-handler.desktop $out/share/applications/${executableName}-url-handler.desktop
 
         mkdir -p $out/share/pixmaps
         cp $out/lib/vscode/resources/app/resources/linux/code.png $out/share/pixmaps/code.png

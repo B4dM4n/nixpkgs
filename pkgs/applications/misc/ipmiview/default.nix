@@ -11,6 +11,16 @@
 , psmisc
 , xorg }:
 
+
+let
+  desktopItem = makeDesktopItem rec {
+    name = "IPMIView";
+    exec = "IPMIView";
+    desktopName = name;
+    genericName = "Supermicro BMC manager";
+    categories = "Network";
+  };
+in
 stdenv.mkDerivation rec {
   pname = "IPMIView";
   version = "2.17.0";
@@ -22,6 +32,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ patchelf makeWrapper ];
+  buildInputs = [ desktopItem ];
   buildPhase = with xorg;
     let
       stunnelBinary = if stdenv.hostPlatform.system == "x86_64-linux" then "linux/stunnel64"
@@ -37,19 +48,9 @@ stdenv.mkDerivation rec {
     patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" ./BMCSecurity/${stunnelBinary}
   '';
 
-  desktopItem = makeDesktopItem rec {
-    name = "IPMIView";
-    exec = "IPMIView";
-    desktopName = name;
-    genericName = "Supermicro BMC manager";
-    categories = "Network";
-  };
-
   installPhase = ''
     mkdir -p $out/bin
     cp -R . $out/
-
-    ln -s ${desktopItem}/share $out/share
 
     # LD_LIBRARY_PATH: fontconfig is used from java code
     # PATH: iputils is used for ping, and psmisc is for killall

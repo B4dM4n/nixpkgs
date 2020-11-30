@@ -24,6 +24,15 @@ let
     else if stdenv.isi686    then "i686"
     else if stdenv.isAarch64 then "armv8-a"
     else throw "unsupported architecture";
+
+  desktopItem = makeDesktopItem {
+    name = "monero-wallet-gui";
+    exec = "monero-wallet-gui";
+    icon = "monero";
+    desktopName = "Monero";
+    genericName = "Wallet";
+    categories  = "Network;Utility;";
+  };
 in
 
 stdenv.mkDerivation rec {
@@ -50,6 +59,7 @@ stdenv.mkDerivation rec {
     randomx libgcrypt libgpgerror
     boost libunwind libsodium pcsclite
     zeromq hidapi rapidjson
+    desktopItem
   ] ++ optionals trezorSupport [ libusb1 protobuf python3 ];
 
   postUnpack = ''
@@ -85,20 +95,7 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = [ "-DARCH=${arch}" ];
 
-  desktopItem = makeDesktopItem {
-    name = "monero-wallet-gui";
-    exec = "monero-wallet-gui";
-    icon = "monero";
-    desktopName = "Monero";
-    genericName = "Wallet";
-    categories  = "Network;Utility;";
-  };
-
   postInstall = ''
-    # install desktop entry
-    install -Dm644 -t $out/share/applications \
-      ${desktopItem}/share/applications/*
-
     # install icons
     for n in 16 24 32 48 64 96 128 256; do
       size=$n"x"$n
