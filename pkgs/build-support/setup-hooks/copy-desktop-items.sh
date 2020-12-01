@@ -19,7 +19,7 @@
 # or all '*.desktop' files placed inside the 'share/applications'
 # folder of each `desktopItems` argument.
 
-postInstallHooks+=(copyDesktopItems)
+preFixupPhases+=" copyDesktopItems"
 
 copyDesktopItems() {
     [[ ${dontCopyDesktopItems:-} == 1 || -z ${desktopItems:-} ]] && return
