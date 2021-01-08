@@ -1769,6 +1769,8 @@ in {
 
   django_polymorphic = callPackage ../development/python-modules/django-polymorphic { };
 
+  django-post_office = callPackage ../development/python-modules/django-post_office { };
+
   django-postgresql-netfields = callPackage ../development/python-modules/django-postgresql-netfields { };
 
   django-q = callPackage ../development/python-modules/django-q { };
