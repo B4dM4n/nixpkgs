@@ -1,19 +1,51 @@
-{ buildPythonPackage, lib, fetchPypi, xmlsec, pkgconfig, libxml2, libxslt, libtool, lxml }:
+{ buildPythonPackage
+, lib
+, fetchPypi
+, xmlsec
+, pkg-config
+, pkgconfig
+, libxml2
+, libxslt
+, libtool
+, lxml
+, pytest
+, hypothesis
+, setuptools_scm
+, toml
+, black
+}:
 
 buildPythonPackage rec {
   pname = "xmlsec";
-  version = "1.3.3";
+  version = "1.3.9";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1mlysa6ld9l9a8w78m01c6kzmq6lxicd3zvlv0ik55vl44bw0wz5";
+    sha256 = "sha256-PRPXtsuSHbxNYNAK0ACBoDjfc6Hmn1vMNpXesb8gk7A=";
   };
 
-  nativeBuildInputs = [ pkgconfig ];
+  nativeBuildInputs = [
+    setuptools_scm
+    toml
+    # pkg-config
+  ];
 
-  buildInputs = [ xmlsec libxml2 libxslt lxml libtool ];
+  buildInputs = [
+    pkgconfig
+    xmlsec
+    libxml2
+    libxslt
+    lxml
+    libtool
+  ];
 
-  checkPhase = ''
+  checkInputs = [
+    pytest
+    hypothesis
+    black
+  ];
+
+  postCheck = ''
     python -c 'import xmlsec'
   '';
 
