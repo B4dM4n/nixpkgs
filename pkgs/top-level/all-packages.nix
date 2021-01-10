@@ -16597,6 +16597,8 @@ in
     autoreconfHook = buildPackages.autoreconfHook269;
   };
 
+  tpm2-tss-engine = callPackage ../development/libraries/tpm2-tss-engine { };
+
   tremor = callPackage ../development/libraries/tremor { };
 
   twolame = callPackage ../development/libraries/twolame { };
