@@ -7441,6 +7441,8 @@ in
 
   rpPPPoE = callPackage ../tools/networking/rp-pppoe { };
 
+  rpi-imager = libsForQt5.callPackage ../applications/misc/rpi-imager { };
+
   rpiboot-unstable = callPackage ../development/misc/rpiboot/unstable.nix { };
 
   rpm = callPackage ../tools/package-management/rpm {
