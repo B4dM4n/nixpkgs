@@ -9504,7 +9504,7 @@ in
     else ../development/compilers/gcc/10);
   gcc = if (with stdenv.targetPlatform; isVc4 || libc == "relibc")
     then gcc6 else
-      if stdenv.targetPlatform.isAarch64 then gcc9 else gcc10;
+      if stdenv.targetPlatform.isAarch32 || stdenv.targetPlatform.isAarch64 then gcc9 else gcc10;
   gcc-unwrapped = gcc.cc;
 
   gccStdenv = if stdenv.cc.isGNU then stdenv else stdenv.override {
