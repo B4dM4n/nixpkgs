@@ -727,4 +727,55 @@ runTests {
       { a = 3; b = 30; c = 300; }
     ];
   };
+
+  # CUSTOMISATION
+
+  testMakeOverridable =
+    let
+      mkDerivation = attrs: attrs // {
+        overrideAttrs = f: mkDerivation (attrs // f attrs);
+      };
+
+      fnAdd = makeOverridable ({ a, b }: mkDerivation { result = a + b; });
+
+      result1 = fnAdd { a = 1; b = 2; };
+      result2 = result1.override { a = 10; };
+      result3 = result2.override { b = 5; };
+
+      result4 = result1.overrideAttrs (old: { result = 4; });
+      result5 = result1.overrideAttrs (old: { new = true; });
+
+      pkgArgs = { self, a, b }: {
+        inherit a b;
+        result = self.a + self.b;
+      };
+
+      pkgFix = { a, b }: fix (self: mkDerivation (pkgArgs { inherit self a b; }));
+      pkgFix1 = makeOverridable pkgFix { a = 1; b = 100; };
+      pkgFix2 = pkgFix1.overrideAttrs (old: { a = 2; });
+      pkgFix3 = pkgFix2.overrideAttrs (old: { a = 3; });
+      pkgFix4 = pkgFix1.override { b = 200; };
+      pkgFix5 = pkgFix3.override { b = 200; };
+      pkgFix6 = pkgFix5.overrideAttrs (old: { a = 4; });
+
+      pkgSelf = overrideWithSelf ({ self, a, b } @ args: mkDerivation (pkgArgs args));
+      pkgSelf1 = makeOverridable pkgSelf { a = 1; b = 100; };
+      pkgSelf2 = pkgSelf1.overrideAttrs (old: { a = 2; });
+      pkgSelf3 = pkgSelf2.overrideAttrs (old: { a = 3; });
+      pkgSelf4 = pkgSelf1.override { b = 200; };
+      pkgSelf5 = pkgSelf3.override { b = 200; };
+      pkgSelf6 = pkgSelf5.overrideAttrs (old: { a = 4; });
+    in
+    {
+      expr = [
+        [ result1.result result2.result result3.result result4.result result5.result result5.new ]
+        [ pkgFix1.result pkgFix2.result pkgFix3.result pkgFix4.result pkgFix5.result ]
+        [ pkgSelf1.result pkgSelf2.result pkgSelf3.result pkgSelf4.result pkgSelf5.result ]
+      ];
+      expected = [
+        [ 3 12 15 4 3 true ]
+        [ 101 101 101 201 201 201 ]
+        [ 101 102 103 201 203 204 ]
+      ];
+    };
 }
