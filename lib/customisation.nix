@@ -66,7 +66,21 @@ rec {
   */
   makeOverridable = f: origArgs:
     let
-      result = f origArgs;
+      # If `f` is an `overrideWithSelfArg` function, copy the self argument
+      # name to function `g`, otherwise return `g`.
+      copyOverrideWithSelfArg = g:
+        if f.__functionArgsSelf or null != null
+        then overrideWithSelfArg f.__functionArgsSelf g
+        else g;
+      # If `f` is an `overrideWithSelfArg` function, call the function `g`
+      # with `args` and also pass in the self argument, otherwise just call
+      # `g` with `args`.
+      callOverrideWithSelfArg = g: args:
+        if f.__functionArgsSelf or null != null
+        then lib.fix (self: g (args // { ${f.__functionArgsSelf} = self; }))
+        else g args;
+
+      result = callOverrideWithSelfArg f origArgs;
 
       # Creates a functor with the same arguments as f
       copyArgs = g: lib.setFunctionArgs g (lib.functionArgs f);
@@ -76,7 +90,7 @@ rec {
       # Re-call the function but with different arguments
       overrideArgs = copyArgs (newArgs: makeOverridable f (overrideWith newArgs));
       # Change the result of the function call by applying g to it
-      overrideResult = g: makeOverridable (copyArgs (args: g (f args))) origArgs;
+      overrideResult = g: makeOverridable (copyOverrideWithSelfArg (copyArgs (args: g (f args)))) origArgs;
     in
       if builtins.isAttrs result then
         result // {
@@ -92,6 +106,45 @@ rec {
         }
       else result;
 
+  /* Add metadata to the given function, which notifies `makeOverridable`
+     that this function requires a parameter named `arg` which is the result
+     of calling the function.
+
+     This allows to reliably use the recursive argument `arg` in a derivation
+     when combined with `overrideAttrs`.
+
+       nix-repl> pkgArgs = self: {
+                   name = "test";
+                   value = 1;
+                   passthru = {
+                     v = self.value;
+                   };
+                 }
+
+       nix-repl> pkgFix = { stdenv }:
+                   lib.fix (self: stdenv.mkDerivation (pkgArgs self))
+
+       nix-repl> pkgFix1 = pkgs.callPackage pkgFix { }
+
+       nix-repl> pkgFix2 = pkgFix1.overrideAttrs (old: { value = 2; })
+
+       nix-repl> pkgSelf = lib.overrideWithSelf ({ self, stdenv }:
+                   stdenv.mkDerivation (pkgArgs self))
+
+       nix-repl> pkgSelf1 = pkgs.callPackage pkgSelf { }
+
+       nix-repl> pkgSelf2 = pkgSelf1.overrideAttrs (old: { value = 2; })
+
+       nix-repl> [ pkgFix2.v pkgSelf2.v ]
+       [ 1 2 ]
+  */
+  overrideWithSelfArg = arg: f:
+    lib.setFunctionArgs f (lib.functionArgs f) // {
+      __functionArgsSelf = arg;
+    };
+
+  /* A variant of `overrideWithSelfArg` which uses the argument name `self`. */
+  overrideWithSelf = overrideWithSelfArg "self";
 
   /* Call the package function in the file `fn' with the required
     arguments automatically.  The function is called with the
