@@ -727,4 +727,62 @@ runTests {
       { a = 3; b = 30; c = 300; }
     ];
   };
+
+  # CUSTOMISATION
+
+  testMakeOverridable =
+    let
+      mkDerivation = attrs: attrs // {
+        overrideAttrs = f: mkDerivation (attrs // f attrs);
+      };
+
+      fnAdd = makeOverridable ({ a, b }: mkDerivation { result = a + b; });
+
+      result1 = fnAdd { a = 1; b = 2; };
+      result2 = result1.override { a = 10; };
+      result3 = result2.override { b = 5; };
+
+      result4 = result1.overrideAttrs (old: { result = 4; });
+      result5 = result1.overrideAttrs (old: { new = true; });
+
+      pkgArgs = { _self, a, b }: {
+        inherit a b;
+        result = _self.a + _self.b;
+      };
+
+      pkgFix = makeOverridable ({ a, b }: fix (_self: mkDerivation (pkgArgs { inherit _self a b; })));
+      pkgFix1 = pkgFix { a = 1; b = 100; };
+      pkgFix2 = pkgFix1.overrideAttrs (old: { a = 2; });
+      pkgFix3 = pkgFix2.overrideAttrs (old: { a = 3; });
+      pkgFix4 = pkgFix1.override { b = 200; };
+      pkgFix5 = pkgFix3.override { b = 200; };
+      pkgFix6 = pkgFix5.overrideAttrs (old: { a = 4; });
+
+      pkgSelf = makeOverridable  ({ _self, a, b } @ args: mkDerivation (pkgArgs args));
+      pkgSelf1 = pkgSelf { a = 1; b = 100; };
+      pkgSelf2 = pkgSelf1.overrideAttrs (old: { a = 2; });
+      pkgSelf3 = pkgSelf2.overrideAttrs (old: { a = 3; });
+      pkgSelf4 = pkgSelf1.override { b = 200; };
+      pkgSelf5 = pkgSelf3.override { b = 200; };
+      pkgSelf6 = pkgSelf5.overrideAttrs (old: { a = 4; });
+
+      wrapPkgSelf = makeOverridable ({ a, b } @ args: pkgSelf (args // { a = a + 10; }));
+      wrapPkgSelf1 = wrapPkgSelf { a = 1; b = 100; };
+      wrapPkgSelf2 = wrapPkgSelf1.overrideAttrs (old: { a = 2; });
+      wrapPkgSelf3 = wrapPkgSelf2.override { a = 2; };
+    in
+    {
+      expr = [
+        [ result1.result result2.result result3.result result4.result result5.result result5.new ]
+        [ pkgFix1.result pkgFix2.result pkgFix3.result pkgFix4.result pkgFix5.result pkgFix6.result ]
+        [ pkgSelf1.result pkgSelf2.result pkgSelf3.result pkgSelf4.result pkgSelf5.result pkgSelf6.result ]
+        [ wrapPkgSelf1.result wrapPkgSelf2.result wrapPkgSelf3.result ]
+      ];
+      expected = [
+        [ 3 12 15 4 3 true ]
+        [ 101 101 101 201 201 201 ]
+        [ 101 102 103 201 203 204 ]
+        [ 111 102 102 ]
+      ];
+    };
 }
