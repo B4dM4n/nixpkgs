@@ -4,7 +4,6 @@
 
 let
   python = python3.override {
-    self = python;
     packageOverrides = self: super : {
       xstatic-bootstrap = super.xstatic-bootstrap.overridePythonAttrs(oldAttrs: rec {
         version = "3.3.7.1";

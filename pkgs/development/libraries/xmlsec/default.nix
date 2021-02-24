@@ -1,9 +1,8 @@
-{ stdenv, fetchurl, libxml2, gnutls, libxslt, pkg-config, libgcrypt, libtool
+{ _self, stdenv, fetchurl, libxml2, gnutls, libxslt, pkg-config, libgcrypt, libtool
 # nss_3_53 is used instead of the latest due to a number of issues:
 # https://github.com/lsh123/xmlsec/issues?q=is%3Aissue+is%3Aopen+nss
 , openssl, nss_3_53, lib, runCommandCC, writeText }:
 
-lib.fix (self:
 let
   version = "1.2.31";
 in
@@ -53,7 +52,7 @@ stdenv.mkDerivation {
   passthru.tests.libxmlsec1-crypto = runCommandCC "libxmlsec1-crypto-test"
     {
       nativeBuildInputs = [ pkg-config ];
-      buildInputs = [ self libxml2 libxslt libtool ];
+      buildInputs = [ _self libxml2 libxslt libtool ];
     } ''
     $CC $(pkg-config --cflags --libs xmlsec1) -o crypto-test ${writeText "crypto-test.c" ''
       #include <xmlsec/xmlsec.h>
@@ -81,4 +80,3 @@ stdenv.mkDerivation {
     updateWalker = true;
   };
 }
-)

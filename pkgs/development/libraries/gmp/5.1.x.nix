@@ -1,11 +1,11 @@
-{ lib, stdenv, fetchurl, m4
+{ _self, lib, stdenv, fetchurl, m4
 , cxx ? true
 , withStatic ? stdenv.hostPlatform.isStatic
 }:
 
 let inherit (lib) optional; in
 
-let self = stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   name = "gmp-5.1.3";
 
   src = fetchurl { # we need to use bz2, others aren't in bootstrapping stdenv
@@ -17,7 +17,7 @@ let self = stdenv.mkDerivation rec {
   # maybe let ghc use a version with *.so shared with rest of nixpkgs and *.a added
   # - see #5855 for related discussion
   outputs = [ "out" "dev" "info" ];
-  passthru.static = self.out;
+  passthru.static = _self.out;
 
   nativeBuildInputs = [ m4 ];
 
@@ -77,5 +77,4 @@ let self = stdenv.mkDerivation rec {
     badPlatforms = [ "x86_64-darwin" ];
     maintainers = [ maintainers.peti ];
   };
-};
-  in self
+}

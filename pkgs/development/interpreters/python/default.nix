@@ -19,13 +19,13 @@ with pkgs;
     , pythonOnBuildForTarget
     , pythonOnHostForHost
     , pythonOnTargetForTarget
-    , self # is pythonOnHostForTarget
+    , _self # is pythonOnHostForTarget
     }: let
       pythonPackages = callPackage
         ({ pkgs, stdenv, python, overrides }: let
           pythonPackagesFun = import ../../../top-level/python-packages.nix {
             inherit stdenv pkgs lib;
-            python = self;
+            python = _self;
           };
           otherSplices = {
             selfBuildBuild = pythonOnBuildForBuild.pkgs;
@@ -91,10 +91,10 @@ with pkgs;
         isPy3k = isPy3;
         isPyPy = lib.hasInfix "pypy" interpreter;
 
-        buildEnv = callPackage ./wrapper.nix { python = self; inherit (pythonPackages) requiredPythonModules; };
+        buildEnv = callPackage ./wrapper.nix { python = _self; inherit (pythonPackages) requiredPythonModules; };
         withPackages = import ./with-packages.nix { inherit buildEnv pythonPackages;};
         pkgs = pythonPackages;
-        interpreter = "${self}/bin/${executable}";
+        interpreter = "${_self}/bin/${executable}";
         inherit executable implementation libPrefix pythonVersion sitePackages;
         inherit sourceVersion;
         pythonAtLeast = lib.versionAtLeast pythonVersion;
@@ -102,16 +102,15 @@ with pkgs;
         inherit hasDistutilsCxxPatch;
         # TODO: rename to pythonOnBuild
         # Not done immediately because its likely used outside Nixpkgs.
-        pythonForBuild = pythonOnBuildForHost.override { inherit packageOverrides; self = pythonForBuild; };
+        pythonForBuild = pythonOnBuildForHost.override { inherit packageOverrides; };
 
         tests = callPackage ./tests.nix {
-          python = self;
+          python = _self;
         };
   };
 in {
 
   python27 = callPackage ./cpython/2.7 {
-    self = python27;
     sourceVersion = {
       major = "2";
       minor = "7";
@@ -124,7 +123,6 @@ in {
   };
 
   python36 = callPackage ./cpython {
-    self = python36;
     sourceVersion = {
       major = "3";
       minor = "6";
@@ -137,7 +135,6 @@ in {
   };
 
   python37 = callPackage ./cpython {
-    self = python37;
     sourceVersion = {
       major = "3";
       minor = "7";
@@ -150,7 +147,6 @@ in {
   };
 
   python38 = callPackage ./cpython {
-    self = python38;
     sourceVersion = {
       major = "3";
       minor = "8";
@@ -163,7 +159,6 @@ in {
   };
 
   python39 = callPackage ./cpython {
-    self = python39;
     sourceVersion = {
       major = "3";
       minor = "9";
@@ -176,7 +171,6 @@ in {
   };
 
   python310 = callPackage ./cpython {
-    self = python310;
     sourceVersion = {
       major = "3";
       minor = "10";
@@ -190,7 +184,6 @@ in {
 
   # Minimal versions of Python (built without optional dependencies)
   python3Minimal = (python38.override {
-    self = python3Minimal;
     # strip down that python version as much as possible
     openssl = null;
     readline = null;
@@ -214,7 +207,6 @@ in {
   });
 
   pypy27 = callPackage ./pypy {
-    self = pypy27;
     sourceVersion = {
       major = "7";
       minor = "3";
@@ -230,7 +222,6 @@ in {
   };
 
   pypy36 = callPackage ./pypy {
-    self = pypy36;
     sourceVersion = {
       major = "7";
       minor = "3";
@@ -246,8 +237,6 @@ in {
   };
 
   pypy27_prebuilt = callPackage ./pypy/prebuilt.nix {
-    # Not included at top-level
-    self = pythonInterpreters.pypy27_prebuilt;
     sourceVersion = {
       major = "7";
       minor = "3";
@@ -259,8 +248,6 @@ in {
   };
 
   pypy36_prebuilt = callPackage ./pypy/prebuilt.nix {
-    # Not included at top-level
-    self = pythonInterpreters.pypy36_prebuilt;
     sourceVersion = {
       major = "7";
       minor = "3";
@@ -272,7 +259,6 @@ in {
   };
 
   graalpython37 = callPackage ./graalpython/default.nix {
-    self = pythonInterpreters.graalpython37;
     inherit passthruFun;
   };
 

@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchFromGitHub, writeText, elixir }:
+{ _self, lib, stdenv, fetchFromGitHub, writeText, elixir }:
 
 let
   shell = drv: stdenv.mkDerivation {
     name = "interactive-shell-${drv.name}";
     buildInputs = [ drv ];
   };
-
-  pkg = self: stdenv.mkDerivation rec {
+in
+  stdenv.mkDerivation rec {
     pname = "hex";
     version = "0.20.5";
 
@@ -51,7 +51,6 @@ let
     };
 
     passthru = {
-      env = shell self;
+      env = shell _self;
     };
-};
-in lib.fix pkg
+  }

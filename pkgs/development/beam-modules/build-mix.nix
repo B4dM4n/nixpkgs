@@ -2,6 +2,7 @@
 
 { name
 , version
+, _self
 , src
 , setupHook ? null
 , buildInputs ? []
@@ -27,8 +28,8 @@ let
     };
 
   bootstrapper = ./mix-bootstrap;
-
-  pkg = self: stdenv.mkDerivation ( attrs // {
+in
+  stdenv.mkDerivation ( attrs // {
     name = "${name}-${version}";
     inherit version;
 
@@ -93,8 +94,7 @@ let
 
     passthru = {
       packageName = name;
-      env = shell self;
+      env = shell _self;
       inherit beamDeps;
     };
-});
-in fix pkg
+  })

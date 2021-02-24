@@ -27,13 +27,13 @@ let
     ver = version;
     tag = ver.gitTag;
     atLeast27 = lib.versionAtLeast ver.majMin "2.7";
-    baseruby = self.override {
+    baseruby = ruby.override {
       useRailsExpress = false;
       docSupport = false;
       rubygemsSupport = false;
     };
-    self = lib.makeOverridable (
-      { stdenv, buildPackages, lib
+    ruby = lib.makeOverridable (
+      { _self, stdenv, buildPackages, lib
       , fetchurl, fetchpatch, fetchFromSavannah, fetchFromGitHub
       , useRailsExpress ? true
       , rubygemsSupport ? true
@@ -227,13 +227,13 @@ let
           gemPath = "lib/${rubyEngine}/gems/${ver.libDir}";
           devEnv = import ./dev.nix {
             inherit buildEnv bundler bundix;
-            ruby = self;
+            ruby = _self;
           };
 
           inherit (import ../../ruby-modules/with-packages {
             inherit lib stdenv makeWrapper buildRubyGem buildEnv;
             gemConfig = defaultGemConfig;
-            ruby = self;
+            ruby = _self;
           }) withPackages gems;
 
           # deprecated 2016-09-21
@@ -243,7 +243,7 @@ let
           patchLevel = ver.patchLevel;
         };
       }
-    ) args; in self;
+    ) args; in ruby;
 
 in {
   ruby_2_6 = generic {

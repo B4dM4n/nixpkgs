@@ -1,4 +1,4 @@
-{ lib, stdenv, callPackage, fetchFromGitHub
+{ _self, lib, stdenv, callPackage, fetchFromGitHub
 , cmake, kodiPlain, libcec_platform, tinyxml, pugixml
 , steam, udev, libusb1, jsoncpp, libhdhomerun, zlib
 , python3Packages, expat, glib, nspr, nss, openssl
@@ -6,7 +6,7 @@
 
 with lib;
 
-let self = rec {
+rec {
 
   pluginDir = "/share/kodi/addons";
   rel = "Matrix";
@@ -32,7 +32,7 @@ let self = rec {
 
   kodiWithPlugins = func: callPackage ./wrapper.nix {
     inherit kodi;
-    plugins = requiredKodiPlugins (func self);
+    plugins = requiredKodiPlugins (func _self);
   };
 
   kodi-platform = stdenv.mkDerivation rec {
@@ -556,4 +556,4 @@ let self = rec {
 
     extraBuildInputs = [ libarchive lzma bzip2 zlib lz4 lzo openssl ];
   };
-}; in self
+}

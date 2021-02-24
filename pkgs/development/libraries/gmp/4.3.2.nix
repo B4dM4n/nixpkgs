@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchurl, m4, cxx ? true }:
+{ _self, lib, stdenv, fetchurl, m4, cxx ? true }:
 
-let self = stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   name = "gmp-4.3.2";
 
   src = fetchurl {
@@ -12,7 +12,7 @@ let self = stdenv.mkDerivation rec {
   # maybe let ghc use a version with *.so shared with rest of nixpkgs and *.a added
   # - see #5855 for related discussion
   outputs = [ "out" "dev" "info" ];
-  passthru.static = self.out;
+  passthru.static = _self.out;
 
   nativeBuildInputs = [ m4 ];
 
@@ -71,5 +71,4 @@ let self = stdenv.mkDerivation rec {
     platforms = lib.platforms.all;
     badPlatforms = [ "x86_64-darwin" ];
   };
-};
-  in self
+}

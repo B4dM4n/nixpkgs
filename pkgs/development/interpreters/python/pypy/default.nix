@@ -1,7 +1,7 @@
 { lib, stdenv, substituteAll, fetchurl
 , zlib ? null, zlibSupport ? true, bzip2, pkg-config, libffi, libunwind, Security
 , sqlite, openssl, ncurses, python, expat, tcl, tk, tix, xlibsWrapper, libX11
-, self, gdbm, db, lzma
+, _self, gdbm, db, lzma
 , python-setup-hook
 # For the Python package set
 , packageOverrides ? (self: super: {})
@@ -24,7 +24,7 @@ with lib;
 let
   isPy3k = substring 0 1 pythonVersion == "3";
   passthru = passthruFun {
-    inherit self sourceVersion pythonVersion packageOverrides;
+    inherit _self sourceVersion pythonVersion packageOverrides;
     implementation = "pypy";
     libPrefix = "pypy${pythonVersion}";
     executable = "pypy${if isPy3k then "3" else ""}";

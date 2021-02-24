@@ -223,7 +223,7 @@ lib.makeScope pkgs.newScope (self: {
           (if builtins.typeOf overrides == "list" then overrides else [ overrides ])
         );
       packageOverrides = lib.foldr lib.composeExtensions (self: super: { }) overlays;
-      py = python.override { inherit packageOverrides; self = py; };
+      py = python.override { inherit packageOverrides; };
 
       inputAttrs = mkInputAttrs { inherit py pyProject; attrs = { }; includeBuildSystem = false; };
 

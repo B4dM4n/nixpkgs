@@ -1,6 +1,7 @@
 # Updating? Keep $out/etc synchronized with passthru keys
 
 { lib, stdenv
+, _self
 , fetchurl
 , fetchFromGitHub
 , substituteAll
@@ -88,8 +89,8 @@ let
   } ''
     exec python3 -c "$buildCommandPython"
   '';
-
-  self = stdenv.mkDerivation rec {
+in
+  stdenv.mkDerivation rec {
     pname = "fwupd";
     # A regression is present in https://github.com/fwupd/fwupd/commit/fde4b1676a2c64e70bebd88f7720307c62635654
     # released with 1.5.6.
@@ -325,14 +326,14 @@ let
           import os
           import pathlib
 
-          etc = '${self}/etc'
+          etc = '${_self}/etc'
           package_etc = set(itertools.chain.from_iterable([[os.path.relpath(os.path.join(prefix, file), etc) for file in files] for (prefix, dirs, files) in os.walk(etc)]))
           passthru_etc = set(${listToPy passthru.filesInstalledToEtc})
           assert len(package_etc - passthru_etc) == 0, f'fwupd package contains the following paths in /etc that are not listed in passthru.filesInstalledToEtc: {package_etc - passthru_etc}'
           assert len(passthru_etc - package_etc) == 0, f'fwupd package lists the following paths in passthru.filesInstalledToEtc that are not contained in /etc: {passthru_etc - package_etc}'
 
           config = configparser.RawConfigParser()
-          config.read('${self}/etc/fwupd/daemon.conf')
+          config.read('${_self}/etc/fwupd/daemon.conf')
           package_disabled_plugins = config.get('fwupd', 'DisabledPlugins').rstrip(';').split(';')
           passthru_disabled_plugins = ${listToPy passthru.defaultDisabledPlugins}
           assert package_disabled_plugins == passthru_disabled_plugins, f'Default disabled plug-ins in the package {package_disabled_plugins} do not match those listed in passthru.defaultDisabledPlugins {passthru_disabled_plugins}'
@@ -348,6 +349,4 @@ let
       license = licenses.lgpl21Plus;
       platforms = platforms.linux;
     };
-  };
-
-in self
+  }

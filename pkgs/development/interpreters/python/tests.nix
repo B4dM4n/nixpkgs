@@ -108,12 +108,9 @@ let
     };
   in {
     test-packageOverrides = let
-      myPython = let
-        self = python.override {
-          packageOverrides = extension;
-          inherit self;
-        };
-      in self;
+      myPython = python.override {
+        packageOverrides = extension;
+      };
     in assert myPython.pkgs.foobar == myPython.pkgs.numpy; myPython.withPackages(ps: with ps; [ foobar ]);
     # overrideScope is broken currently
     # test-overrideScope = let

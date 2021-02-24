@@ -1,7 +1,8 @@
 with import ../../../default.nix {};
 let
 openssl_lib_marked = import ./openssl-lib-marked.nix;
-self = rec {
+in
+stdenv.mkDerivation rec {
   name = "ql-to-nix";
   env = buildEnv { name = name; paths = buildInputs; };
   buildInputs = [
@@ -12,5 +13,4 @@ self = rec {
   ];
   CPATH = "${libfixposix}/include";
   LD_LIBRARY_PATH = "${openssl.out}/lib:${fuse}/lib:${libuv}/lib:${libev}/lib:${libmysqlclient}/lib:${libmysqlclient}/lib/mysql:${postgresql.lib}/lib:${sqlite.out}/lib:${libfixposix}/lib:${freetds}/lib:${openssl_lib_marked}/lib:${glib.out}/lib:${gdk_pixbuf}/lib:${cairo}/lib:${pango.out}/lib:${gtk3}/lib:${webkitgtk}/lib";
-};
-in stdenv.mkDerivation self
+}

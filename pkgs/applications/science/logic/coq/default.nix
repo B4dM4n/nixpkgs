@@ -5,7 +5,7 @@
 # - The exact version can be specified through the `version` argument to
 #   the derivation; it defaults to the latest stable version.
 
-{ lib, stdenv, fetchzip, writeText, pkg-config, gnumake42
+{ _self, lib, stdenv, fetchzip, writeText, pkg-config, gnumake42
 , customOCamlPackages ? null
 , ocamlPackages_4_05, ocamlPackages_4_09, ocamlPackages_4_10, ncurses
 , buildIde ? !(stdenv.isDarwin && lib.versionAtLeast version "8.10")
@@ -67,7 +67,8 @@ let
     ++ optional (!versionAtLeast "8.10") ocamlPackages.camlp5
     ++ optional (!versionAtLeast "8.13") ocamlPackages.num
     ++ optional (versionAtLeast "8.13") ocamlPackages.zarith;
-self = stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   pname = "coq";
   inherit (fetched) version src;
 
@@ -78,9 +79,9 @@ self = stdenv.mkDerivation {
     inherit (ocamlPackages) ocaml camlp5 findlib num ;
     emacsBufferSetup = pkgs: ''
       ; Propagate coq paths to children
-      (inherit-local-permanent coq-prog-name "${self}/bin/coqtop")
-      (inherit-local-permanent coq-dependency-analyzer "${self}/bin/coqdep")
-      (inherit-local-permanent coq-compiler "${self}/bin/coqc")
+      (inherit-local-permanent coq-prog-name "${_self}/bin/coqtop")
+      (inherit-local-permanent coq-dependency-analyzer "${_self}/bin/coqdep")
+      (inherit-local-permanent coq-compiler "${_self}/bin/coqc")
       ; If the coq-library path was already set, re-set it based on our current coq
       (when (fboundp 'get-coq-library-directory)
         (inherit-local-permanent coq-library-directory (get-coq-library-directory))
@@ -181,4 +182,4 @@ self = stdenv.mkDerivation {
     maintainers = with maintainers; [ roconnor thoughtpolice vbgl Zimmi48 ];
     platforms = platforms.unix;
   };
-}; in self
+}

@@ -39,8 +39,8 @@ let
   };
 
   mesonBool = b: if b then "true" else "false";
-
-  self = stdenv.mkDerivation rec {
+in
+  stdenv.mkDerivation rec {
     pname = "pipewire";
     version = "0.3.21";
 
@@ -150,6 +150,4 @@ let
       platforms = platforms.linux;
       maintainers = with maintainers; [ jtojnar ];
     };
-  };
-
-in self
+  }

@@ -1,6 +1,5 @@
-{ self, callPackage, lib }:
+{ callPackage, lib }:
 callPackage ./default.nix {
-  inherit self;
   version = "2.0.5-2020-12-28";
   rev = "56c04accf975bff2519c34721dccbbdb7b8e6963";
   isStable = true;

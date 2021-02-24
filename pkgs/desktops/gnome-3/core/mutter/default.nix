@@ -1,4 +1,5 @@
-{ fetchurl
+{ _self
+, fetchurl
 , fetchpatch
 , substituteAll
 , runCommand
@@ -40,7 +41,7 @@
 , wayland-protocols
 }:
 
-let self = stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "mutter";
   version = "3.38.2";
 
@@ -128,12 +129,12 @@ let self = stdenv.mkDerivation rec {
   PKG_CONFIG_UDEV_UDEVDIR = "${placeholder "out"}/lib/udev";
 
   passthru = {
-    libdir = "${self}/lib/mutter-7";
+    libdir = "${_self}/lib/mutter-7";
 
     tests = {
       libdirExists = runCommand "mutter-libdir-exists" {} ''
-        if [[ ! -d ${self.libdir} ]]; then
-          echo "passthru.libdir should contain a directory, “${self.libdir}” is not one."
+        if [[ ! -d ${_self.libdir} ]]; then
+          echo "passthru.libdir should contain a directory, “${_self.libdir}” is not one."
           exit 1
         fi
         touch $out
@@ -153,5 +154,4 @@ let self = stdenv.mkDerivation rec {
     maintainers = teams.gnome.members;
     platforms = platforms.linux;
   };
-};
-in self
+}

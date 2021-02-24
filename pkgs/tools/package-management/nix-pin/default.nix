@@ -1,6 +1,6 @@
-{ lib, pkgs, stdenv, fetchFromGitHub, mypy, python3, nix, git, makeWrapper
+{ _self, lib, pkgs, stdenv, fetchFromGitHub, mypy, python3, nix, git, makeWrapper
 , runtimeShell }:
-let self = stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "nix-pin";
   version = "0.4.0";
   src = fetchFromGitHub {
@@ -21,10 +21,10 @@ let self = stdenv.mkDerivation rec {
   '';
   passthru =
     let
-      defaults = import "${self}/share/nix/defaults.nix";
+      defaults = import "${_self}/share/nix/defaults.nix";
     in {
       api = { pinConfig ? defaults.pinConfig }:
-        let impl = import "${self}/share/nix/api.nix" { inherit pkgs pinConfig; }; in
+        let impl = import "${_self}/share/nix/api.nix" { inherit pkgs pinConfig; }; in
         { inherit (impl) augmentedPkgs pins callPackage; };
       updateScript = ''
         #!${runtimeShell}
@@ -49,4 +49,4 @@ let self = stdenv.mkDerivation rec {
     maintainers = [ maintainers.timbertson ];
     platforms = platforms.all;
   };
-}; in self
+}

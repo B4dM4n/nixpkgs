@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, readline
+{ _self, lib, stdenv, fetchurl, readline
 , compat ? false
 , callPackage
 , packageOverrides ? (self: super: {})
@@ -9,9 +9,9 @@
 , postBuild ? null
 }:
 let
-luaPackages = callPackage ../../lua-modules {lua=self; overrides=packageOverrides;};
-
-self = stdenv.mkDerivation rec {
+luaPackages = callPackage ../../lua-modules {lua=_self; overrides=packageOverrides;};
+in
+stdenv.mkDerivation rec {
   pname = "lua";
   luaversion = with sourceVersion; "${major}.${minor}";
   version = "${luaversion}.${sourceVersion.patch}";
@@ -90,12 +90,12 @@ self = stdenv.mkDerivation rec {
 
   passthru = rec {
     buildEnv = callPackage ./wrapper.nix {
-      lua = self;
+      lua = _self;
       inherit (luaPackages) requiredLuaModules;
     };
     withPackages = import ./with-packages.nix { inherit buildEnv luaPackages;};
     pkgs = luaPackages;
-    interpreter = "${self}/bin/lua";
+    interpreter = "${_self}/bin/lua";
   };
 
   meta = {
@@ -112,5 +112,4 @@ self = stdenv.mkDerivation rec {
     license = lib.licenses.mit;
     platforms = lib.platforms.unix;
   };
-};
-in self
+}

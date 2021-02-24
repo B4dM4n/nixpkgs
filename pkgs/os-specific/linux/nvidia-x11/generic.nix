@@ -16,7 +16,7 @@
 , broken ? false
 }@args:
 
-{ lib, stdenv, callPackage, pkgs, pkgsi686Linux, fetchurl
+{ _self, lib, stdenv, callPackage, pkgs, pkgsi686Linux, fetchurl
 , kernel ? null, perl, nukeReferences
 , # Whether to build the libraries only (i.e. not the kernel module or
   # nvidia-settings).  Used to support 32-bit binaries on 64-bit
@@ -42,8 +42,8 @@ let
 
   libPathFor = pkgs: pkgs.lib.makeLibraryPath [ pkgs.libdrm pkgs.xorg.libXext pkgs.xorg.libX11
     pkgs.xorg.libXv pkgs.xorg.libXrandr pkgs.xorg.libxcb pkgs.zlib pkgs.stdenv.cc.cc ];
-
-  self = stdenv.mkDerivation {
+in
+  stdenv.mkDerivation {
     name = "nvidia-x11-${version}${nameSuffix}";
 
     builder = ./builder.sh;
@@ -89,11 +89,11 @@ let
     disallowedReferences = optional (!libsOnly) [ kernel.dev ];
 
     passthru = {
-      settings = (if settings32Bit then pkgsi686Linux.callPackage else callPackage) (import ./settings.nix self settingsSha256) {
+      settings = (if settings32Bit then pkgsi686Linux.callPackage else callPackage) (import ./settings.nix _self settingsSha256) {
         withGtk2 = preferGtk2;
         withGtk3 = !preferGtk2;
       };
-      persistenced = mapNullable (hash: callPackage (import ./persistenced.nix self hash) { }) persistencedSha256;
+      persistenced = mapNullable (hash: callPackage (import ./persistenced.nix _self hash) { }) persistencedSha256;
       inherit persistencedVersion settingsVersion;
     } // optionalAttrs (!i686bundled) {
       inherit lib32;
@@ -108,6 +108,4 @@ let
       priority = 4; # resolves collision with xorg-server's "lib/xorg/modules/extensions/libglx.so"
       inherit broken;
     };
-  };
-
-in self
+  }

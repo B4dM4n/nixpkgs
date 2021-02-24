@@ -2,7 +2,7 @@
 , stdenv
 , fetchurl
 , python-setup-hook
-, self
+, _self
 , which
 # Dependencies
 , bzip2
@@ -28,7 +28,7 @@ with lib;
 let
   isPy3k = majorVersion == "3";
   passthru = passthruFun {
-    inherit self sourceVersion pythonVersion packageOverrides;
+    inherit _self sourceVersion pythonVersion packageOverrides;
     implementation = "pypy";
     libPrefix = "pypy${pythonVersion}";
     executable = "pypy${if isPy3k then "3" else ""}";
@@ -37,7 +37,7 @@ let
 
     # Not possible to cross-compile with.
     pythonOnBuildForBuild = throw "${pname} does not support cross compilation";
-    pythonOnBuildForHost = self;
+    pythonOnBuildForHost = _self;
     pythonOnBuildForTarget = throw "${pname} does not support cross compilation";
     pythonOnHostForHost = throw "${pname} does not support cross compilation";
     pythonOnTargetForTarget = throw "${pname} does not support cross compilation";

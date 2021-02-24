@@ -1,6 +1,7 @@
 { stdenv, writeText, erlang, perl, which, gitMinimal, wget, lib }:
 
 { name, version
+, _self
 , src
 , setupHook ? null
 , buildInputs ? []
@@ -24,8 +25,8 @@ let
           name = "interactive-shell-${drv.name}";
           buildInputs = [ drv ];
     };
-
-  pkg = self: stdenv.mkDerivation ( attrs // {
+in
+  stdenv.mkDerivation ( attrs // {
     app_name = name;
     name = "${name}-${version}";
     inherit version;
@@ -95,8 +96,7 @@ let
 
     passthru = {
       packageName = name;
-      env = shell self;
+      env = shell _self;
       inherit beamDeps;
     };
-});
-in fix pkg
+  })

@@ -1,6 +1,6 @@
 { gtkWidgets ? false # build GTK widgets for libinfinity
 , avahiSupport ? false # build support for Avahi in libinfinity
-, lib, stdenv, fetchurl, pkg-config, glib, libxml2, gnutls, gsasl
+, _self, lib, stdenv, fetchurl, pkg-config, glib, libxml2, gnutls, gsasl
 , gobject-introspection
 , gtk3 ? null, gtk-doc, docbook_xsl, docbook_xml_dtd_412, avahi ? null, libdaemon, libidn, gss
 , libintl }:
@@ -10,8 +10,8 @@ assert gtkWidgets -> gtk3 != null;
 
 let
   mkFlag = flag: feature: (if flag then "--with-" else "--without-") + feature;
-
-  self = stdenv.mkDerivation rec {
+in
+  stdenv.mkDerivation rec {
     pname = "libinfinity";
     version = "0.7.2";
     src = fetchurl {
@@ -39,7 +39,7 @@ let
     ];
 
     passthru = {
-      infinoted = "${self.bin}/bin/infinoted-${lib.versions.majorMinor version}";
+      infinoted = "${_self.bin}/bin/infinoted-${lib.versions.majorMinor version}";
     };
 
     meta = {
@@ -49,5 +49,4 @@ let
       maintainers = [ lib.maintainers.phreedom ];
       platforms = with lib.platforms; linux ++ darwin;
     };
-  };
-in self
+  }

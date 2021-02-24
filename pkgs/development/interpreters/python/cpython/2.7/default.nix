@@ -10,7 +10,7 @@
 , sqlite
 , tcl ? null, tk ? null, tix ? null, xlibsWrapper ? null, libX11 ? null, x11Support ? false
 , zlib
-, self
+, _self
 , configd, coreutils
 , autoreconfHook
 , python-setup-hook
@@ -43,7 +43,7 @@ let
   inherit (passthru) pythonForBuild;
 
   passthru = passthruFun rec {
-    inherit self sourceVersion packageOverrides;
+    inherit _self sourceVersion packageOverrides;
     implementation = "cpython";
     libPrefix = "python${pythonVersion}";
     executable = libPrefix;

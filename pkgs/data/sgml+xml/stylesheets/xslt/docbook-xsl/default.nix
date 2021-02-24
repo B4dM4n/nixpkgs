@@ -1,10 +1,11 @@
-{ lib, stdenv, substituteAll, fetchurl, fetchpatch, findXMLCatalogs, writeScriptBin, ruby, bash }:
-
+{ lib, stdenv, callPackage, substituteAll, fetchurl, fetchpatch, findXMLCatalogs, writeScriptBin, ruby, bash }:
 let
 
-  common = { pname, sha256, suffix ? "" }: let
-    legacySuffix = if suffix == "-nons" then "" else "-ns";
-    self = stdenv.mkDerivation rec {
+  common = { _self, pname, sha256, suffix ? "" }:
+    let
+      legacySuffix = if suffix == "-nons" then "" else "-ns";
+    in
+    stdenv.mkDerivation rec {
       inherit pname;
       version = "1.79.2";
 
@@ -59,7 +60,7 @@ let
       passthru.dbtoepub = writeScriptBin "dbtoepub"
         ''
           #!${bash}/bin/bash
-          exec -a dbtoepub ${ruby}/bin/ruby ${self}/share/xml/${pname}/epub/bin/dbtoepub "$@"
+          exec -a dbtoepub ${ruby}/bin/ruby ${_self}/share/xml/${pname}/epub/bin/dbtoepub "$@"
         '';
 
       meta = {
@@ -69,17 +70,16 @@ let
         platforms = lib.platforms.all;
       };
     };
-  in self;
 
 in {
 
-  docbook-xsl-nons = common {
+  docbook-xsl-nons = callPackage common {
     pname = "docbook-xsl-nons";
     suffix = "-nons";
     sha256 = "00i1hdyxim8jymv2dz68ix3wbs5w6isxm8ijb03qk3vs1g59x2zf";
   };
 
-  docbook-xsl-ns = common {
+  docbook-xsl-ns = callPackage common {
     pname = "docbook-xsl-ns";
     sha256 = "0wd33z41kdsybyx3ay21w6bdlmgpd9kyn3mr5y520lsf8km28r9i";
   };

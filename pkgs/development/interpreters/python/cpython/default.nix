@@ -11,7 +11,7 @@
 , tcl ? null, tk ? null, tix ? null, libX11 ? null, xorgproto ? null, x11Support ? false
 , bluez ? null, bluezSupport ? false
 , zlib
-, self
+, _self
 , configd
 , autoreconfHook
 , autoconf-archive
@@ -61,7 +61,7 @@ let
   inherit (passthru) pythonForBuild;
 
   passthru = passthruFun rec {
-    inherit self sourceVersion packageOverrides;
+    inherit _self sourceVersion packageOverrides;
     implementation = "cpython";
     libPrefix = "python${pythonVersion}";
     executable = libPrefix;

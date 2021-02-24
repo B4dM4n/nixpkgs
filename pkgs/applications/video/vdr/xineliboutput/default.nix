@@ -1,12 +1,12 @@
-{ stdenv, fetchurl, lib, vdr
+{ _self, stdenv, fetchurl, lib, vdr
 , libav, libcap, libvdpau
 , xineLib, libjpeg, libextractor, libglvnd, libGLU
 , libX11, libXext, libXrender, libXrandr
 , makeWrapper
 }: let
   makeXinePluginPath = l: lib.concatStringsSep ":" (map (p: "${p}/lib/xine/plugins") l);
-
-  self =  stdenv.mkDerivation rec {
+in
+  stdenv.mkDerivation rec {
     pname = "vdr-xineliboutput";
     version = "2.2.0";
 
@@ -56,7 +56,7 @@
       xineLib
     ];
 
-    passthru.requiredXinePlugins = [ xineLib self ];
+    passthru.requiredXinePlugins = [ xineLib _self ];
 
     meta = with lib;{
       homepage = "https://sourceforge.net/projects/xineliboutput/";
@@ -65,5 +65,4 @@
       license = licenses.gpl2;
       inherit (vdr.meta) platforms;
     };
-  };
-in self
+  }
