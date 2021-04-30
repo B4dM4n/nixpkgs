@@ -13,6 +13,7 @@
 , bluez ? null, bluezSupport ? false
 , zlib
 , tzdata ? null
+, _autoSelf ? null
 , self
 , configd
 , autoreconfHook

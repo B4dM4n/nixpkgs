@@ -69,12 +69,10 @@ in rec {
   };
 
   luajit_2_0 = import ../luajit/2.0.nix {
-    self = luajit_2_0;
     inherit callPackage lib;
   };
 
   luajit_2_1 = import ../luajit/2.1.nix {
-    self = luajit_2_1;
     inherit callPackage;
   };
 

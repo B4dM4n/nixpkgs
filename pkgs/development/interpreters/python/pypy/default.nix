@@ -1,6 +1,7 @@
 { lib, stdenv, substituteAll, fetchurl
 , zlib ? null, zlibSupport ? true, bzip2, pkg-config, libffi, libunwind, Security
 , sqlite, openssl, ncurses, python, expat, tcl, tk, tix, xlibsWrapper, libX11
+, _autoSelf ? null
 , self, gdbm, db, xz
 , python-setup-hook
 # For the Python package set

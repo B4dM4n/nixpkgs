@@ -1,4 +1,6 @@
-{ stdenv
+{ _autoSelf ? null
+, self
+, stdenv
 , fetchFromGitHub
 , lib
 , makeWrapper
@@ -20,7 +22,7 @@
   - fontforge = null (limited functionality)
 */
 
-let self = stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "mftrace";
   version = "1.2.20";
 
@@ -60,4 +62,4 @@ let self = stdenv.mkDerivation rec {
     maintainers = with maintainers; [ xworld21 ];
     platforms = platforms.all;
   };
-}; in self
+}

@@ -5,7 +5,7 @@
 # - The exact version can be specified through the `version` argument to
 #   the derivation; it defaults to the latest stable version.
 
-{ lib, stdenv, fetchzip, writeText, pkg-config, gnumake42
+{ _autoSelf ? null, self, lib, stdenv, fetchzip, writeText, pkg-config, gnumake42
 , customOCamlPackages ? null
 , ocamlPackages_4_05, ocamlPackages_4_09, ocamlPackages_4_10, ncurses
 , buildIde ? true
@@ -69,7 +69,8 @@ let
     ++ optional (!versionAtLeast "8.10") ocamlPackages.camlp5
     ++ optional (!versionAtLeast "8.13") ocamlPackages.num
     ++ optional (versionAtLeast "8.13") ocamlPackages.zarith;
-self = stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   pname = "coq";
   inherit (fetched) version src;
 
@@ -183,4 +184,4 @@ self = stdenv.mkDerivation {
     maintainers = with maintainers; [ roconnor thoughtpolice vbgl Zimmi48 ];
     platforms = platforms.unix;
   };
-}; in self
+}

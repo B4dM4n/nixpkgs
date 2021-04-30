@@ -1,6 +1,8 @@
 # Updating? Keep $out/etc synchronized with passthru keys
 
 { lib, stdenv
+, _autoSelf ? null
+, self
 , fetchurl
 , fetchFromGitHub
 , substituteAll
@@ -88,8 +90,8 @@ let
   } ''
     exec python3 -c "$buildCommandPython"
   '';
-
-  self = stdenv.mkDerivation rec {
+in
+  stdenv.mkDerivation rec {
     pname = "fwupd";
     version = "1.5.7";
 
@@ -350,6 +352,4 @@ let
       license = licenses.lgpl21Plus;
       platforms = platforms.linux;
     };
-  };
-
-in self
+  }

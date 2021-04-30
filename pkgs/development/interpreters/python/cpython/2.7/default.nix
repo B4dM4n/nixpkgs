@@ -10,6 +10,7 @@
 , sqlite
 , tcl ? null, tk ? null, tix ? null, xlibsWrapper ? null, libX11 ? null, x11Support ? false
 , zlib
+, _autoSelf ? null
 , self
 , configd, coreutils
 , autoreconfHook

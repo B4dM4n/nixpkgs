@@ -20,7 +20,7 @@ let
             src = python2Packages.sympy.src;
           });
         };
-      in python.override {inherit packageOverrides; self = overridenPython; };
+      in python.override { inherit packageOverrides; };
     in overridenPython.withPackages (ps: [
       ps.sympy
       ps.mpmath

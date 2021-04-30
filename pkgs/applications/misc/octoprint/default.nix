@@ -21,7 +21,6 @@ let
   };
 
   py = python3.override {
-    self = py;
     packageOverrides = lib.foldr lib.composeExtensions (self: super: {}) (
       [
         # the following dependencies are non trivial to update since later versions introduce backwards incompatible

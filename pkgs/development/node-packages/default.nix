@@ -1,4 +1,4 @@
-{ pkgs, nodejs, stdenv }:
+{ _autoSelf ? null, self, pkgs, nodejs, stdenv }:
 
 let
   since = (version: pkgs.lib.versionAtLeast nodejs.version version);
@@ -7,7 +7,7 @@ let
     inherit pkgs nodejs;
     inherit (stdenv.hostPlatform) system;
   };
-  self = super // {
+  _self = super // {
     "@angular/cli" = super."@angular/cli".override {
       prePatch = ''
         export NG_CLI_ANALYTICS=false
@@ -306,4 +306,4 @@ let
       '';
     };
   };
-in self
+in _self

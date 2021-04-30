@@ -4,8 +4,6 @@
 let
   py = python3.override {
     packageOverrides = self: super: {
-      self = py;
-
       # not compatible with prompt_toolkit >=2.0
       prompt_toolkit = super.prompt_toolkit.overridePythonAttrs (oldAttrs: rec {
         name = "${oldAttrs.pname}-${version}";

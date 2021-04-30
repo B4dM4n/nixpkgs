@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, m4
+{ _autoSelf ? null, self, lib, stdenv, fetchurl, m4
 , cxx ? !stdenv.hostPlatform.useAndroidPrebuilt && !stdenv.hostPlatform.isWasm
 , buildPackages
 , withStatic ? stdenv.hostPlatform.isStatic
@@ -11,7 +11,7 @@
 
 let inherit (lib) optional; in
 
-let self = stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   name = "gmp-6.2.1";
 
   src = fetchurl { # we need to use bz2, others aren't in bootstrapping stdenv
@@ -84,5 +84,4 @@ let self = stdenv.mkDerivation rec {
     platforms = platforms.all;
     maintainers = [ maintainers.peti maintainers.vrthra ];
   };
-};
-  in self
+}

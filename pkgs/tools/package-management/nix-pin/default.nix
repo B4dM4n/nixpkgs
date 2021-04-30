@@ -1,6 +1,6 @@
-{ lib, pkgs, stdenv, fetchFromGitHub, mypy, python3, nix, git, makeWrapper
+{ _autoSelf ? null, self, lib, pkgs, stdenv, fetchFromGitHub, mypy, python3, nix, git, makeWrapper
 , runtimeShell }:
-let self = stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "nix-pin";
   version = "0.4.0";
   src = fetchFromGitHub {
@@ -50,4 +50,4 @@ let self = stdenv.mkDerivation rec {
     maintainers = [ maintainers.timbertson ];
     platforms = platforms.all;
   };
-}; in self
+}

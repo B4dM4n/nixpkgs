@@ -2,6 +2,7 @@
 , stdenv
 , fetchurl
 , python-setup-hook
+, _autoSelf ? null
 , self
 , which
 # Dependencies

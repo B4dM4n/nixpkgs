@@ -105,7 +105,7 @@ with pkgs;
         inherit hasDistutilsCxxPatch;
         # TODO: rename to pythonOnBuild
         # Not done immediately because its likely used outside Nixpkgs.
-        pythonForBuild = pythonOnBuildForHost.override { inherit packageOverrides; self = pythonForBuild; };
+        pythonForBuild = pythonOnBuildForHost.override { inherit packageOverrides; };
 
         tests = callPackage ./tests.nix {
           python = self;
@@ -127,7 +127,6 @@ with pkgs;
 in {
 
   python27 = callPackage ./cpython/2.7 {
-    self = python27;
     sourceVersion = {
       major = "2";
       minor = "7";
@@ -140,7 +139,6 @@ in {
   };
 
   python36 = callPackage ./cpython {
-    self = python36;
     sourceVersion = {
       major = "3";
       minor = "6";
@@ -153,7 +151,6 @@ in {
   };
 
   python37 = callPackage ./cpython {
-    self = python37;
     sourceVersion = {
       major = "3";
       minor = "7";
@@ -166,13 +163,11 @@ in {
   };
 
   python38 = callPackage ./cpython ({
-    self = python38;
     inherit (darwin) configd;
     inherit passthruFun;
   } // sources.python38);
 
   python39 = callPackage ./cpython {
-    self = python39;
     sourceVersion = {
       major = "3";
       minor = "9";
@@ -185,7 +180,6 @@ in {
   };
 
   python310 = callPackage ./cpython {
-    self = python310;
     sourceVersion = {
       major = "3";
       minor = "10";
@@ -199,7 +193,6 @@ in {
 
   # Minimal versions of Python (built without optional dependencies)
   python3Minimal = (callPackage ./cpython ({
-    self = python3Minimal;
     inherit passthruFun;
     pythonAttr = "python3Minimal";
     # strip down that python version as much as possible
@@ -227,7 +220,6 @@ in {
   });
 
   pypy27 = callPackage ./pypy {
-    self = pypy27;
     sourceVersion = {
       major = "7";
       minor = "3";
@@ -243,7 +235,6 @@ in {
   };
 
   pypy36 = callPackage ./pypy {
-    self = pypy36;
     sourceVersion = {
       major = "7";
       minor = "3";
@@ -259,8 +250,6 @@ in {
   };
 
   pypy27_prebuilt = callPackage ./pypy/prebuilt.nix {
-    # Not included at top-level
-    self = pythonInterpreters.pypy27_prebuilt;
     sourceVersion = {
       major = "7";
       minor = "3";
@@ -272,8 +261,6 @@ in {
   };
 
   pypy36_prebuilt = callPackage ./pypy/prebuilt.nix {
-    # Not included at top-level
-    self = pythonInterpreters.pypy36_prebuilt;
     sourceVersion = {
       major = "7";
       minor = "3";
@@ -285,7 +272,6 @@ in {
   };
 
   graalpython37 = callPackage ./graalpython/default.nix {
-    self = pythonInterpreters.graalpython37;
     inherit passthruFun;
   };
 

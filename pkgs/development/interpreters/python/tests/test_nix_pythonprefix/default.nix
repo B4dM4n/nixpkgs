@@ -6,7 +6,7 @@ let
     packageOverrides = self: super: {
       typeddep = self.callPackage ./typeddep {};
     };
-  in interpreter.override {inherit packageOverrides; self = python;};
+  in interpreter.override {inherit packageOverrides; };
 
   pythonEnv = python.withPackages(ps: [
     ps.typeddep

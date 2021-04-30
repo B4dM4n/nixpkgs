@@ -1,4 +1,6 @@
-{ fetchurl
+{ _autoSelf ? null
+, self
+, fetchurl
 , fetchpatch
 , substituteAll
 , runCommand
@@ -43,7 +45,7 @@
 , wayland-protocols
 }:
 
-let self = stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "mutter";
   version = "3.38.3";
 
@@ -159,5 +161,4 @@ let self = stdenv.mkDerivation rec {
     maintainers = teams.gnome.members;
     platforms = platforms.linux;
   };
-};
-in self
+}

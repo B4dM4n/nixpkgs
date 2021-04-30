@@ -1,4 +1,5 @@
 { stdenv, lib, fetchurl, fetchpatch, buildPackages
+, _autoSelf ? null, self
 , meson, pkg-config, ninja
 , intltool, bison, flex, file, python3Packages
 , expat, libdrm, xorg, wayland, wayland-protocols, openssl
@@ -34,8 +35,8 @@ let
   # Release frequency: https://www.mesa3d.org/releasing.html#schedule
   version = "21.0.1";
   branch  = versions.major version;
-
-self = stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   pname = "mesa";
   inherit version;
 
@@ -242,6 +243,4 @@ self = stdenv.mkDerivation {
     platforms = platforms.mesaPlatforms;
     maintainers = with maintainers; [ primeos vcunat ]; # Help is welcome :)
   };
-};
-
-in self
+}

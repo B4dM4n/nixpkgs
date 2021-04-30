@@ -3,8 +3,7 @@
 , enableManpages ? false
 }:
 
-let
-  self = stdenv.mkDerivation ({
+stdenv.mkDerivation ({
     pname = "clang";
     inherit version;
 
@@ -117,5 +116,4 @@ let
     meta = llvm_meta // {
       description = "man page for Clang ${version}";
     };
-  });
-in self
+  })

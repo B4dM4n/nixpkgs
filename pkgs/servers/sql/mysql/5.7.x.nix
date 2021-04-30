@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, cmake, bison, pkg-config
+{ _autoSelf ? null, self, lib, stdenv, fetchurl, cmake, bison, pkg-config
 , boost, libedit, libevent, lz4, ncurses, openssl, protobuf, readline, zlib, perl
 , cctools, CoreServices, developer_cmds
 , libtirpc, rpcsvc-proto
@@ -6,8 +6,7 @@
 
 # Note: zlib is not required; MySQL can use an internal zlib.
 
-let
-self = stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "mysql";
   version = "5.7.27";
 
@@ -86,4 +85,4 @@ self = stdenv.mkDerivation rec {
       gpl2 lgpl2 lgpl21 mit publicDomain licenses.zlib
     ];
   };
-}; in self
+}

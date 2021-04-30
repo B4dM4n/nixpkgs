@@ -1,6 +1,6 @@
-{ lib, stdenv, fetchurl, m4, cxx ? true }:
+{ _autoSelf ? null, self, lib, stdenv, fetchurl, m4, cxx ? true }:
 
-let self = stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   name = "gmp-4.3.2";
 
   src = fetchurl {
@@ -71,5 +71,4 @@ let self = stdenv.mkDerivation rec {
     platforms = lib.platforms.all;
     badPlatforms = [ "x86_64-darwin" ];
   };
-};
-  in self
+}

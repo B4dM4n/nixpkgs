@@ -39,8 +39,8 @@ let
   };
 
   mesonEnable = b: if b then "enabled" else "disabled";
-
-  self = stdenv.mkDerivation rec {
+in
+  stdenv.mkDerivation rec {
     pname = "pipewire";
     version = "0.3.26";
 
@@ -181,6 +181,4 @@ let
       platforms = platforms.linux;
       maintainers = with maintainers; [ jtojnar ];
     };
-  };
-
-in self
+  }

@@ -28,13 +28,13 @@ let
     tag = ver.gitTag;
     atLeast27 = lib.versionAtLeast ver.majMin "2.7";
     atLeast30 = lib.versionAtLeast ver.majMin "3.0";
-    baseruby = self.override {
+    baseruby = ruby.override {
       useRailsExpress = false;
       docSupport = false;
       rubygemsSupport = false;
     };
-    self = lib.makeOverridable (
-      { stdenv, buildPackages, lib
+    ruby = lib.makeOverridable (
+      { _autoSelf ? null, self, stdenv, buildPackages, lib
       , fetchurl, fetchpatch, fetchFromSavannah, fetchFromGitHub
       , useRailsExpress ? true
       , rubygemsSupport ? true
@@ -245,7 +245,7 @@ let
           patchLevel = ver.patchLevel;
         };
       }
-    ) args; in self;
+    ) args; in ruby;
 
 in {
   ruby_2_6 = generic {

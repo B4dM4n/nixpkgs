@@ -1,10 +1,9 @@
-{ lib, stdenv, fetchurl, bison, cmake, pkg-config
+{ _autoSelf ? null, self, lib, stdenv, fetchurl, bison, cmake, pkg-config
 , boost, icu, libedit, libevent, lz4, ncurses, openssl, protobuf, re2, readline, zlib, zstd
 , numactl, perl, cctools, CoreServices, developer_cmds, libtirpc, rpcsvc-proto
 }:
 
-let
-self = stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "mysql";
   version = "8.0.22";
 
@@ -77,4 +76,4 @@ self = stdenv.mkDerivation rec {
     maintainers = with maintainers; [ orivej ];
     platforms = platforms.unix;
   };
-}; in self
+}

@@ -3,7 +3,7 @@
 with lib;
 
 let
-  np = nodePackages.override { generated = ./package.nix; self = np; };
+  np = nodePackages.override { generated = ./package.nix; };
 in nodePackages.buildNodePackage rec {
   name = "ripple-data-api-${version}";
   version = lib.strings.substring 0 7 rev;

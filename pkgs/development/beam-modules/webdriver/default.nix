@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchFromGitHub, writeText, erlang }:
+{ _autoSelf ? null, self, lib, stdenv, fetchFromGitHub, writeText, erlang }:
 
 let
   shell = drv: stdenv.mkDerivation {
     name = "interactive-shell-${drv.name}";
     buildInputs = [ drv ];
   };
-
-  pkg = self: stdenv.mkDerivation {
+in
+  stdenv.mkDerivation {
     name = "webdriver";
     version = "0.0.0+build.18.7ceaf1f";
 
@@ -35,6 +35,4 @@ let
     passthru = {
       env = shell self;
     };
-
-};
-in lib.fix pkg
+  }

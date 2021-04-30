@@ -1,7 +1,6 @@
 { lib, python37, fetchFromGitHub }:
 let
   python = python37.override {
-    self = python;
     packageOverrides = self: super: {
       tornado = super.tornado_4;
     };

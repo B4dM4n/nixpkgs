@@ -6,6 +6,7 @@
 , version
 , extraMeta ? {}
 , callPackage
+, _autoSelf ? null
 , self
 , packageOverrides ? (self: super: {})
 , enableFFI ? true

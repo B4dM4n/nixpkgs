@@ -2,7 +2,6 @@
 
 let
   python = python3.override {
-    self = python;
     packageOverrides = self: super: {
       tornado = super.tornado_4;
     };

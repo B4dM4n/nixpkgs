@@ -1,12 +1,12 @@
-{ lib, stdenv, fetchFromGitHub, buildRebar3 }:
+{ _autoSelf ? null, self, lib, stdenv, fetchFromGitHub, buildRebar3 }:
 
 let
   shell = drv: stdenv.mkDerivation {
           name = "interactive-shell-${drv.name}";
           buildInputs = [ drv ];
     };
-
-  pkg = self: buildRebar3 {
+in
+  buildRebar3 {
     name = "pgsql";
     version = "25+beta.2";
 
@@ -29,6 +29,4 @@ let
     passthru = {
       env = shell self;
     };
-
-};
-in lib.fix pkg
+  }

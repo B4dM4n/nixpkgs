@@ -72,14 +72,16 @@ let
   ++ lib.optionals stdenv.isDarwin [ libiconv ];
 
   generic = (
-    { version
+    { _autoSelf ? null
+    , self
+    , version
     , sha256
     , binary
     , doCheck ? true
     , extraBuildInputs ? [ ]
     , buildFlags ? [ "all" "docs" ]
     }:
-    lib.fix (compiler: stdenv.mkDerivation {
+    stdenv.mkDerivation {
       pname = "crystal";
       inherit buildFlags doCheck version;
 
@@ -205,7 +207,7 @@ let
       '';
 
       passthru.buildCrystalPackage = callPackage ./build-package.nix {
-        crystal = compiler;
+        crystal = self;
       };
 
       meta = with lib; {
@@ -217,7 +219,7 @@ let
         # Error running at_exit handler: Nil assertion failed
         broken = lib.versions.minor version == "32" && stdenv.isDarwin;
       };
-    })
+    }
   );
 
 in
@@ -231,32 +233,32 @@ rec {
     };
   };
 
-  crystal_0_31 = generic {
+  crystal_0_31 = callPackage generic {
     version = "0.31.1";
     sha256 = "1dswxa32w16gnc6yjym12xj7ibg0g6zk3ngvl76lwdjqb1h6lwz8";
     doCheck = false; # 5 checks are failing now
     binary = binaryCrystal_0_31;
   };
 
-  crystal_0_32 = generic {
+  crystal_0_32 = callPackage generic {
     version = "0.32.1";
     sha256 = "120ndi3nhh2r52hjvhwfb49cdggr1bzdq6b8xg7irzavhjinfza6";
     binary = crystal_0_31;
   };
 
-  crystal_0_33 = generic {
+  crystal_0_33 = callPackage generic {
     version = "0.33.0";
     sha256 = "1zg0qixcws81s083wrh54hp83ng2pa8iyyafaha55mzrh8293jbi";
     binary = crystal_0_32;
   };
 
-  crystal_0_34 = generic {
+  crystal_0_34 = callPackage generic {
     version = "0.34.0";
     sha256 = "110lfpxk9jnqyznbfnilys65ixj5sdmy8pvvnlhqhc3ccvrlnmq4";
     binary = crystal_0_33;
   };
 
-  crystal_0_35 = generic {
+  crystal_0_35 = callPackage generic {
     version = "0.35.1";
     sha256 = "0p51bjl1nsvwsm64lqq421dcsxa201w7wwq8plw4r8wqarpq0g69";
     binary = crystal_0_34;
@@ -264,13 +266,13 @@ rec {
     extraBuildInputs = [ git ];
   };
 
-  crystal_0_36 = generic {
+  crystal_0_36 = callPackage generic {
     version = "0.36.1";
     sha256 = "sha256-5rjrvwZKM4lHpmxLyUVbi0Zw98xT+iJKonxwfUwS/Wk=";
     binary = crystal_0_35;
   };
 
-  crystal_1_0 = generic {
+  crystal_1_0 = callPackage generic {
     version = "1.0.0";
     sha256 = "sha256-RI+a3w6Rr+uc5jRf7xw0tOenR+q6qii/ewWfID6dbQ8=";
     binary = crystal_0_36;

@@ -1,6 +1,8 @@
 { stdenv
 , pkgs
 , lib
+, _autoSelf ? null
+, self
 # Note: either stdenv.mkDerivation or, for octaveFull, the qt-5 mkDerivation
 # with wrapQtAppsHook (comes from libsForQt5.callPackage)
 , mkDerivation
@@ -113,7 +115,8 @@ let
     inherit (pkgs) makeSetupHook makeWrapper;
   };
 
-  self = mkDerivation rec {
+in
+  mkDerivation rec {
     version = "6.2.0";
     pname = "octave";
 
@@ -239,6 +242,4 @@ let
         (lib.platforms.linux ++ lib.platforms.darwin)
       else overridePlatforms;
     };
-  };
-
-in self
+  }

@@ -3,6 +3,7 @@
 , graalvm8
 , passthruFun
 , packageOverrides ? (self: super: {})
+, _autoSelf ? null
 , self
 }:
 

@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchurl, readline
+{ _autoSelf ? null, self, lib, stdenv, fetchurl, readline
 , compat ? false
 , callPackage
 , packageOverrides ? (self: super: {})
@@ -10,8 +10,8 @@
 }:
 let
 luaPackages = callPackage ../../lua-modules {lua=self; overrides=packageOverrides;};
-
-self = stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "lua";
   luaversion = with sourceVersion; "${major}.${minor}";
   version = "${luaversion}.${sourceVersion.patch}";
@@ -112,5 +112,4 @@ self = stdenv.mkDerivation rec {
     license = lib.licenses.mit;
     platforms = lib.platforms.unix;
   };
-};
-in self
+}
