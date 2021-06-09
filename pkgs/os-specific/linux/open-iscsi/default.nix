@@ -1,13 +1,28 @@
-{ lib, stdenv, fetchFromGitHub, automake, autoconf, libtool, gettext
-, util-linux, open-isns, openssl, kmod, perl, systemd, pkgconf
+{ lib
+, stdenv
+, fetchFromGitHub
+, autoconf
+, automake
+, kmod
+, libtool
+, open-isns
+, openssl
+, perl
+, pkg-config
+, util-linux
+, withSystemd ? true
+, systemd ? null
 }:
+
+assert withSystemd -> systemd != null;
 
 stdenv.mkDerivation rec {
   pname = "open-iscsi";
   version = "2.1.4";
 
-  nativeBuildInputs = [ autoconf automake gettext libtool perl pkgconf ];
-  buildInputs = [ kmod open-isns.lib openssl systemd util-linux ];
+  nativeBuildInputs = [ autoconf automake libtool perl pkg-config ];
+  buildInputs = [ kmod open-isns openssl util-linux ]
+    ++ lib.optionals withSystemd [ systemd ];
 
   src = fetchFromGitHub {
     owner = "open-iscsi";
@@ -16,30 +31,49 @@ stdenv.mkDerivation rec {
     sha256 = "HnvLLwxOnu7Oiige6A6zk9NmAI2ImcILp9eCfbdGiyI=";
   };
 
-  DESTDIR = "$(out)";
-
-  NIX_LDFLAGS = "-lkmod -lsystemd";
-  NIX_CFLAGS_COMPILE = "-DUSE_KMOD";
+  outputs = [ "out" "lib" "dev" "man" ];
 
   preConfigure = ''
-    sed -i 's|/usr|/|' Makefile
+    for f in usr/Makefile libopeniscsiusr/Makefile; do
+      substituteInPlace $f --replace /usr/bin/pkg-config pkg-config
+    done
+
+    substituteInPlace Makefile --replace /usr /
   '';
+
+  makeFlags = [
+    "DESTDIR=${placeholder "out"}"
+  ] ++ lib.optionals (!withSystemd) [
+    "NO_SYSTEMD=1"
+  ];
+
+  enableParallelBuilding = true;
 
   installFlags = [
     "install"
+    "install_udev_rules"
+    "rulesdir=/lib/udev/rules.d"
+  ] ++ lib.optionals withSystemd [
     "install_systemd"
   ];
 
   postInstall = ''
-    cp usr/iscsistart $out/sbin/
-    for f in $out/lib/systemd/system/*; do
-      substituteInPlace $f --replace /sbin $out/bin
+    for f in $out/sbin/iscsi_fw_login \
+      $out/sbin/iscsi-gen-initiatorname \
+      $out/lib/udev/rules.d/*.rules \
+      ${lib.optionalString withSystemd "$out/lib/systemd/system/*.service"};
+    do
+      substituteInPlace $f --replace /sbin/ $out/bin/
     done
-    $out/sbin/iscsistart -v
+
+    mkdir -p $lib/lib
+    mv -v $out/lib/lib* $lib/lib/
   '';
 
-  postFixup = ''
-    sed -i "s|/sbin/iscsiadm|$out/bin/iscsiadm|" $out/bin/iscsi_fw_login
+  doInstallCheck = true;
+
+  installCheckPhase = ''
+    $out/bin/iscsistart -v
   '';
 
   meta = with lib; {
