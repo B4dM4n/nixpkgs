@@ -9,11 +9,11 @@
 with lib;
 stdenv.mkDerivation rec {
   pname = "rpmrebuild";
-  version = "2.14";
+  version = "2.16";
 
   src = fetchurl {
     url = "mirror://sourceforge/${pname}/${pname}-${version}.tar.gz";
-    sha256 = "0fcwshb2n25vqaz7k6f0h3hscvz9lqy23nqmvsrw32kiidf3i6dy";
+    sha256 = "uKmDCmxAQGZ9DHiwJegNBG7J9Rr7UV3HiC8kLkCV804=";
   };
 
   sourceRoot = ".";

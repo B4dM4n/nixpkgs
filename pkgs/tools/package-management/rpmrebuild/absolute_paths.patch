@@ -33,25 +33,25 @@ diff --git a/rpmrebuild.sh b/rpmrebuild.sh
 index 87c0262..1d96437 100755
 --- a/rpmrebuild.sh
 +++ b/rpmrebuild.sh
-@@ -121,7 +121,7 @@ function RpmUnpack
- 	(cd $BUILDROOT && cpio --quiet -idmu ) < $CPIO_TEMP || return
- 	rm --force $CPIO_TEMP                               || return
+@@ -127,7 +127,7 @@ function RpmUnpack
+ 	(cd "$BUILDROOT" && cpio --quiet -idmu --no-absolute-filenames ) < "$CPIO_TEMP" || Error "(RpmUnpack) cpio" || return
+ 	rm --force "$CPIO_TEMP"                               || return
  	# Process ghost files
--	/bin/bash $MY_LIB_DIR/rpmrebuild_ghost.sh $BUILDROOT < $FILES_IN || return
-+	bash $MY_LIB_DIR/rpmrebuild_ghost.sh $BUILDROOT < $FILES_IN || return
+-	/bin/bash "$MY_LIB_DIR"/rpmrebuild_ghost.sh "$BUILDROOT" < "$FILES_IN" || return
++	bash "$MY_LIB_DIR"/rpmrebuild_ghost.sh "$BUILDROOT" < "$FILES_IN" || return
  	return 0
  }
  ###############################################################################
-@@ -132,7 +132,7 @@ function CreateBuildRoot
+@@ -138,7 +138,7 @@ function CreateBuildRoot
          if [ "x$package_flag" = "x" ]; then
  		# installed package
  		if [ "X$need_change_files" = "Xyes" ]; then
--			/bin/bash $MY_LIB_DIR/rpmrebuild_buildroot.sh $BUILDROOT < $FILES_IN || return
-+			bash $MY_LIB_DIR/rpmrebuild_buildroot.sh $BUILDROOT < $FILES_IN || return
+-			/bin/bash "$MY_LIB_DIR"/rpmrebuild_buildroot.sh "$BUILDROOT" < "$FILES_IN" || Error "(CreateBuildRoot) rpmrebuild_buildroot.sh $BUILDROOT" || return
++			bash "$MY_LIB_DIR"/rpmrebuild_buildroot.sh "$BUILDROOT" < "$FILES_IN" || Error "(CreateBuildRoot) rpmrebuild_buildroot.sh $BUILDROOT" || return
  		else
  			: # Do nothing (avoid a copy)
  		fi
-@@ -183,9 +183,9 @@ function RpmBuild
+@@ -189,9 +189,9 @@ function RpmBuild
  	# rpmrebuild package dependency
  	# for rpm 3.x : use rpm
  	# for rpm 4.x : use rpmbuild
@@ -69,10 +69,10 @@ index 5fcc75b..8ab6245 100755
 +++ b/spec_func.src
 @@ -63,7 +63,7 @@ function spec_files
  {
- 	rm -f $FILES_IN || return
- 	spec_query qf_spec_files > $FILES_IN || return
--	/bin/bash $MY_LIB_DIR/rpmrebuild_files.sh < $FILES_IN || return
-+	bash $MY_LIB_DIR/rpmrebuild_files.sh < $FILES_IN || return
+ 	rm -f "$FILES_IN" || Erro "spec_files rm $FILES_IN" || return
+ 	spec_query qf_spec_files > "$FILES_IN" || Error "(spec_files) spec_query qf_spec_files" || return
+-	/bin/bash "$MY_LIB_DIR"/rpmrebuild_files.sh < "$FILES_IN" || Error "(spec_files) rpmrebuild_files.sh" || return
++	bash "$MY_LIB_DIR"/rpmrebuild_files.sh < "$FILES_IN" || Error "(spec_files) rpmrebuild_files.sh" || return
  	return 0
  }
  
