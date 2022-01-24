@@ -1934,6 +1934,8 @@ in {
 
   cymem = callPackage ../development/python-modules/cymem { };
 
+  cymruwhois = callPackage ../development/python-modules/cymruwhois { };
+
   cypari2 = callPackage ../development/python-modules/cypari2 { };
 
   cysignals = callPackage ../development/python-modules/cysignals { };
