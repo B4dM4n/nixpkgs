@@ -1,0 +1,12 @@
+diff --git a/dnseval.py b/dnseval.py
+index aeea86d..064e5db 100755
+--- a/dnseval.py
++++ b/dnseval.py
+@@ -59,6 +59,7 @@ class Colors(object):
+             self.N = ''
+             self.R = ''
+             self.G = ''
++            self.O = ''
+             self.B = ''
+ 
+ 
