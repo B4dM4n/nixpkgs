@@ -36,6 +36,6 @@ stdenv.mkDerivation rec {
     homepage = "https://sourceforge.net/projects/rpmrebuild";
     license = licenses.gpl2;
     maintainers = with maintainers; [ b4dm4n ];
-    platforms = platforms.linux ++ platforms.darwin;
+    platforms = platforms.linux;
   };
 }
