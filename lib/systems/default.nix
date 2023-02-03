@@ -332,6 +332,7 @@ let
               else if final.isAarch32 then "arm"
               else if final.isMips64  then "mips64"     # never add "el" suffix
               else if final.isPower64 then "powerpc64"  # never add "le" suffix
+              else if final.isx86_32  then "x86"        # don't pass specific type, like "i686"
               else final.parsed.cpu.name;
 
             # https://doc.rust-lang.org/reference/conditional-compilation.html#target_os
