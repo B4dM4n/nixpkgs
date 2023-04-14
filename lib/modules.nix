@@ -946,14 +946,30 @@ let
         # Process mkOverride properties.
         defs'' = filterOverrides' defs';
 
-        # Sort mkOrder properties.
+        # Process mkMerge and mkIf properties again (this allows `mkForce (mkMerge [...])` for example).
         defs''' =
-          # Avoid sorting if we don't have to.
-          if any (def: def.value._type or "" == "order") defs''.values
-          then sortProperties defs''.values
+          if any (def: elem def.value._type or "" ["if" "merge"]) defs''.values
+          then concatMap (m:
+              map (value: { inherit (m) file; inherit value; }) (dischargeProperties m.value)
+            ) defs''.values
           else defs''.values;
+
+        # Sort mkOrder properties.
+        defs'''' =
+          # Avoid sorting if we don't have to.
+          if any (def: def.value._type or "" == "order") defs'''
+          then let
+            sorted = sortProperties defs''';
+          in
+            # Process mkMerge and mkIf properties again (this allows `mkBefore (mkMerge [...])` for example).
+            if any (def: elem def.value._type or "" ["if" "merge"]) sorted
+            then concatMap (m:
+                map (value: { inherit (m) file; inherit value; }) (dischargeProperties m.value)
+              ) sorted
+            else sorted
+          else defs''';
       in {
-        values = defs''';
+        values = defs'''';
         inherit (defs'') highestPrio;
       };
     defsFinal = defsFinal'.values;
