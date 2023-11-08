@@ -297,6 +297,25 @@ in {
           }
         ];
 
+        dhparams-stateful.configuration = { ... }: lib.mkMerge [
+          webserverBasicConfig
+          {
+            services.nginx.sslSecurityDhparam = "nginx";
+
+            security.dhparams.params.nginx.bits = 1024;
+          }
+        ];
+
+        dhparams-stateless.configuration = { ... }: lib.mkMerge [
+          webserverBasicConfig
+          {
+            services.nginx.sslSecurityDhparam = "nginx";
+
+            security.dhparams.stateful = false;
+            security.dhparams.params.nginx.bits = 1024;
+          }
+        ];
+
         # Test lego internal server (listenHTTP option)
         # Also tests useRoot option
         lego-server.configuration = { ... }: {
@@ -604,6 +623,14 @@ in {
           switch_to(webserver, "ocsp-stapling")
           webserver.wait_for_unit("acme-finished-a.example.test.target")
           check_stapling(client, "a.example.test")
+
+      with subtest("Uses stateful generated dhparams"):
+          switch_to(webserver, "dhparams-stateful")
+          webserver.wait_for_unit("nginx.service")
+
+      with subtest("Uses stateless generated dhparams"):
+          switch_to(webserver, "dhparams-stateless")
+          webserver.wait_for_unit("nginx.service")
 
       with subtest("Can request certificate with HTTP-01 using lego's internal web server"):
           switch_to(webserver, "lego-server")
