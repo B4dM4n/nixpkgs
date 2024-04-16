@@ -2,6 +2,16 @@
 
 let
   cfg = config.programs.git;
+
+  maintenance-service = pkgs.runCommand "git-maintenance-service" {} ''
+    export HOME=$PWD
+
+    ${cfg.package}/bin/git init repo
+    cd repo
+    GIT_TEST_MAINT_SCHEDULER=systemctl:true ${cfg.package}/bin/git maintenance start --scheduler=systemd-timer
+
+    install -D -m 555 ~/.config/systemd/user/git-maintenance@.service $out/lib/systemd/user/git-maintenance@.service
+  '';
 in
 
 {
@@ -52,6 +62,8 @@ in
         '';
       };
 
+      maintenance.install = mkEnableOption "the git-maintenance@.service";
+
       prompt = {
         enable = lib.mkEnableOption "automatically sourcing git-prompt.sh. This does not change $PS1; it simply provides relevant utility functions";
       };
@@ -85,6 +97,12 @@ in
           process = "git-lfs filter-process";
           required = true;
         };
+      };
+    })
+    (mkIf (cfg.enable && cfg.maintenance.install) {
+      systemd.packages = [maintenance-service];
+      programs.git.config = {
+        maintenance.global-systemd-service = true;
       };
     })
     (lib.mkIf (cfg.enable && cfg.prompt.enable) {

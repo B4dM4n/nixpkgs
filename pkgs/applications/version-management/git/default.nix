@@ -58,6 +58,7 @@ stdenv.mkDerivation (finalAttrs: {
     ./git-sh-i18n.patch
     ./git-send-email-honor-PATH.patch
     ./installCheck-path.patch
+    ./global-systemd-maintenance-service.patch
   ] ++ lib.optionals withSsh [
     ./ssh-path.patch
   ];
