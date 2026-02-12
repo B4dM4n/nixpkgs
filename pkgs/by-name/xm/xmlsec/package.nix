@@ -19,7 +19,7 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "xmlsec";
-  version = "1.3.7";
+  version = "1.3.9";
 
   src = fetchurl {
     urls = [
@@ -28,17 +28,12 @@ stdenv.mkDerivation (finalAttrs: {
       # for when the ${finalAttrs.version} gets older than the last two
       "https://www.aleksey.com/xmlsec/download/older-releases/xmlsec1-${finalAttrs.version}.tar.gz"
     ];
-    hash = "sha256-2C6TtpuKogWmFrYpF6JpMiv2Oj6q+zd1AU5hdSsgE+o=";
+    hash = "sha256-pjHIzXprhuatufW5NdRanPl2izywkNRh6OudBDz5ti8=";
   };
 
   patches = [
     ./lt_dladdsearchdir.patch
     ./remove_bsd_base64_decode_flag.patch
-    (fetchpatch {
-      # xmlDoc.encoding is no longer const in libxml 2.15, so fetch the fix
-      url = "https://github.com/lsh123/xmlsec/commit/ef0e3b5cac04db13ce070b1e5bcad7dd7b0eb49b.patch?full_index=1";
-      hash = "sha256-Hv8PaJXkXLq++NuCAJ4IvsYBPj8wkN7dBTniYucq18o=";
-    })
   ];
 
   postPatch = ''
