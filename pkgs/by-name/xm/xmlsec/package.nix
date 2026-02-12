@@ -13,116 +13,121 @@
   lib,
   runCommandCC,
   writeText,
+  enableLegacyFeatures ? false,
+  xmlsec,
 }:
 
-lib.fix (
-  self:
-  stdenv.mkDerivation (finalAttrs: {
-    pname = "xmlsec";
-    version = "1.3.7";
+stdenv.mkDerivation (finalAttrs: {
+  pname = "xmlsec";
+  version = "1.3.7";
 
-    src = fetchurl {
-      urls = [
-        "https://www.aleksey.com/xmlsec/download/xmlsec1-${finalAttrs.version}.tar.gz"
+  src = fetchurl {
+    urls = [
+      "https://www.aleksey.com/xmlsec/download/xmlsec1-${finalAttrs.version}.tar.gz"
 
-        # for when the ${finalAttrs.version} gets older than the last two
-        "https://www.aleksey.com/xmlsec/download/older-releases/xmlsec1-${finalAttrs.version}.tar.gz"
-      ];
-      hash = "sha256-2C6TtpuKogWmFrYpF6JpMiv2Oj6q+zd1AU5hdSsgE+o=";
-    };
-
-    patches = [
-      ./lt_dladdsearchdir.patch
-      ./remove_bsd_base64_decode_flag.patch
-      (fetchpatch {
-        # xmlDoc.encoding is no longer const in libxml 2.15, so fetch the fix
-        url = "https://github.com/lsh123/xmlsec/commit/ef0e3b5cac04db13ce070b1e5bcad7dd7b0eb49b.patch?full_index=1";
-        hash = "sha256-Hv8PaJXkXLq++NuCAJ4IvsYBPj8wkN7dBTniYucq18o=";
-      })
+      # for when the ${finalAttrs.version} gets older than the last two
+      "https://www.aleksey.com/xmlsec/download/older-releases/xmlsec1-${finalAttrs.version}.tar.gz"
     ];
+    hash = "sha256-2C6TtpuKogWmFrYpF6JpMiv2Oj6q+zd1AU5hdSsgE+o=";
+  };
 
-    postPatch = ''
-      substituteAllInPlace src/dl.c
-    '';
+  patches = [
+    ./lt_dladdsearchdir.patch
+    ./remove_bsd_base64_decode_flag.patch
+    (fetchpatch {
+      # xmlDoc.encoding is no longer const in libxml 2.15, so fetch the fix
+      url = "https://github.com/lsh123/xmlsec/commit/ef0e3b5cac04db13ce070b1e5bcad7dd7b0eb49b.patch?full_index=1";
+      hash = "sha256-Hv8PaJXkXLq++NuCAJ4IvsYBPj8wkN7dBTniYucq18o=";
+    })
+  ];
 
-    outputs = [
-      "out"
-      "dev"
-    ];
+  postPatch = ''
+    substituteAllInPlace src/dl.c
+  '';
 
-    nativeBuildInputs = [ pkg-config ];
+  outputs = [
+    "out"
+    "dev"
+  ];
 
-    buildInputs = [
-      libxml2
-      gnutls
-      libgcrypt
-      libtool
-      openssl
-      nss
-    ];
+  nativeBuildInputs = [ pkg-config ];
 
-    propagatedBuildInputs = [
-      # required by xmlsec/transforms.h
-      libxslt
-    ];
+  buildInputs = [
+    libxml2
+    gnutls
+    libtool
+    openssl
+    nss
+  ]
+  ++ lib.optionals enableLegacyFeatures [
+    libgcrypt
+  ];
 
-    enableParallelBuilding = true;
-    doCheck = true;
-    nativeCheckInputs = [ nss.tools ];
-    preCheck = ''
-      export TMPFOLDER=$(mktemp -d)
-      substituteInPlace tests/testrun.sh --replace 'timestamp=`date +%Y%m%d_%H%M%S`' 'timestamp=19700101_000000'
-    '';
+  propagatedBuildInputs = [
+    # required by xmlsec/transforms.h
+    libxslt
+  ];
 
-    # enable deprecated soap headers required by lasso
-    # https://dev.entrouvert.org/issues/18771
-    configureFlags = [ "--enable-soap" ];
+  enableParallelBuilding = true;
+  doCheck = true;
+  nativeCheckInputs = [ nss.tools ];
+  preCheck = ''
+    export TMPFOLDER=$(mktemp -d)
+    substituteInPlace tests/testrun.sh \
+      --replace-fail 'timestamp=`date +%Y%m%d_%H%M%S`' 'timestamp=19700101_000000'
+  '';
 
-    # otherwise libxmlsec1-gnutls.so won't find libgcrypt.so, after #909
-    env.NIX_LDFLAGS = "-lgcrypt";
+  # allow to enable old algorithms and engines, disabled in v1.3.7 by default
+  configureFlags = lib.optionals enableLegacyFeatures [ "--enable-legacy-features" ];
 
-    postInstall = ''
-      moveToOutput "bin/xmlsec1-config" "$dev"
-      moveToOutput "lib/xmlsec1Conf.sh" "$dev"
-    '';
+  postInstall = ''
+    moveToOutput "bin/xmlsec1-config" "$dev"
+    moveToOutput "lib/xmlsec1Conf.sh" "$dev"
+  '';
 
-    passthru.tests.libxmlsec1-crypto =
-      runCommandCC "libxmlsec1-crypto-test"
-        {
-          nativeBuildInputs = [ pkg-config ];
-          buildInputs = [
-            self
-            libxml2
-            libxslt
-            libtool
-          ];
-        }
-        ''
-          $CC $(pkg-config --cflags --libs xmlsec1) -o crypto-test ${writeText "crypto-test.c" ''
-            #include <xmlsec/xmlsec.h>
-            #include <xmlsec/crypto.h>
+  passthru.tests.libxmlsec1-crypto =
+    runCommandCC "libxmlsec1-crypto-test"
+      {
+        nativeBuildInputs = [
+          pkg-config
+        ];
+        buildInputs = [
+          finalAttrs.finalPackage
+          libxml2
+          libxslt
+          libtool
+        ];
+      }
+      ''
+        $CC $(pkg-config --cflags --libs xmlsec1) -o crypto-test ${writeText "crypto-test.c" ''
+          #include <xmlsec/xmlsec.h>
+          #include <xmlsec/crypto.h>
 
-            int main(int argc, char **argv) {
-              return xmlSecInit() ||
-                xmlSecCryptoDLLoadLibrary(argc > 1 ? argv[1] : 0) ||
-                xmlSecCryptoInit();
-            }
-          ''}
+          int main(int argc, char **argv) {
+            return xmlSecInit() ||
+              xmlSecCryptoDLLoadLibrary(argc > 1 ? argv[1] : 0) ||
+              xmlSecCryptoInit();
+          }
+        ''}
 
-          for crypto in "" gcrypt gnutls nss openssl; do
-            ./crypto-test $crypto
-          done
-          touch $out
-        '';
+        for crypto in "" gnutls nss openssl ${lib.optionalString enableLegacyFeatures "gcrypt"}; do
+          ./crypto-test $crypto
+        done
+        touch $out
+      '';
 
-    meta = {
-      description = "XML Security Library in C based on libxml2";
-      homepage = "https://www.aleksey.com/xmlsec/";
-      downloadPage = "https://www.aleksey.com/xmlsec/download.html";
-      license = lib.licenses.mit;
-      mainProgram = "xmlsec1";
-      maintainers = with lib.maintainers; [ b4dm4n ];
-      platforms = with lib.platforms; linux ++ darwin;
-    };
-  })
-)
+  # Also build the test with legacy features enabled. Need to override the xmlsec attribute,
+  # since finalAttrs does not provide override.
+  passthru.tests.libxmlsec1-crypto-with-legacy =
+    (xmlsec.override { enableLegacyFeatures = true; }).tests.libxmlsec1-crypto;
+
+  meta = {
+    description = "XML Security Library in C based on libxml2";
+    homepage = "https://www.aleksey.com/xmlsec/";
+    downloadPage = "https://www.aleksey.com/xmlsec/download.html";
+    license = lib.licenses.mit;
+    mainProgram = "xmlsec1";
+    maintainers = with lib.maintainers; [ b4dm4n ];
+    platforms = with lib.platforms; linux ++ darwin;
+  };
+})
