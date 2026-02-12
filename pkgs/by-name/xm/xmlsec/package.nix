@@ -121,7 +121,7 @@ lib.fix (
       downloadPage = "https://www.aleksey.com/xmlsec/download.html";
       license = lib.licenses.mit;
       mainProgram = "xmlsec1";
-      maintainers = [ ];
+      maintainers = with lib.maintainers; [ b4dm4n ];
       platforms = with lib.platforms; linux ++ darwin;
     };
   })
