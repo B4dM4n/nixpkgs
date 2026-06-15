@@ -1,13 +1,13 @@
 {
   "authentik": {
-    "version": "2026.5.2",
-    "hash": "sha256-djsdph2E+JIIu9Sy5gJwBG378nunXXK2LPW5z/oneMs="
+    "version": "2026.5.3",
+    "hash": "sha256-nmAX8nwZpdDcFAPvC9hAEp0x43RnFtGLUTAm7NcvNZo="
   },
-  "coreCargoHash": "sha256-+vw/7bEWNc+uSTHKyzXrO9yJCK0JCrRSGJ4t5YufgIA=",
+  "coreCargoHash": "sha256-KExlNyT9G3R5rnt99beT2pYrWxezMLhGw+Q9T1X2kj4=",
   "serverVendorHash": "sha256-EVDOZ4USaJoIBDB8mM4ZSBfsSc1d/NOm1Qv/hUJ+8f4=",
   "websiteHashes": {
-    "aarch64-linux": "sha256-WTP4/F8iCsUcXfTBT4yFNyw/lqsu8QandoFGyIxwjEQ=",
-    "x86_64-linux": "sha256-Gl8yZ16YLEVP67rLEsxUmdHkUjlvu4H9myaBD0eGMLY="
+    "aarch64-linux": "sha256-7BK7kIyiIixJuCp5xgIFsLOXCt+nfXQhH4munoKphvE=",
+    "x86_64-linux": "sha256-y+NxOCSW1DOZKP3NfZ1Hyr6crmGrSc64ChWEzRmxx9U="
   },
   "webuiHashes": {
     "aarch64-linux": "sha256-41xZEfLul92vJATZqyVnd7Pp++NzLL/u8NeJJPHpXrw=",
