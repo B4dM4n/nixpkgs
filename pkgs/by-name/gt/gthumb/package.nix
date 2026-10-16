@@ -40,6 +40,9 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-okqqcrVjf0kJfe3JwUGjNhXadw0CkxXzKF6/IVbPe2E=";
   };
 
+  patches = [
+    ./fix-tiff-exif-orientation-crash.patch
+  ];
 
   strictDeps = true;
 
