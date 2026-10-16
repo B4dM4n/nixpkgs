@@ -1,32 +1,34 @@
 {
   stdenv,
   lib,
-  fetchurl,
-  gnome,
-  pkg-config,
-  meson,
-  ninja,
+  colord,
+  desktop-file-utils,
   exiv2,
+  fetchurl,
+  gettext,
+  giflib,
+  glib,
+  gnome,
+  gst_all_1,
+  gtk4,
+  lcms2,
+  libadwaita,
   libheif,
   libjpeg,
-  libtiff,
-  libadwaita,
-  gst_all_1,
-  libraw,
-  glib,
-  gtk4,
-  libportal-gtk4,
-  gsettings-desktop-schemas,
   libjxl,
+  libpng,
+  libportal,
+  libportal-gtk4,
+  libraw,
   librsvg,
+  libtiff,
   libwebp,
-  lcms2,
-  colord,
-  wrapGAppsHook4,
+  meson,
+  ninja,
+  pkg-config,
   shared-mime-info,
-  python3,
-  desktop-file-utils,
   vala,
+  wrapGAppsHook4,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -35,30 +37,32 @@ stdenv.mkDerivation (finalAttrs: {
 
   src = fetchurl {
     url = "mirror://gnome/sources/gthumb/${lib.versions.majorMinor finalAttrs.version}/gthumb-${finalAttrs.version}.tar.xz";
-    sha256 = "sha256-okqqcrVjf0kJfe3JwUGjNhXadw0CkxXzKF6/IVbPe2E=";
+    hash = "sha256-okqqcrVjf0kJfe3JwUGjNhXadw0CkxXzKF6/IVbPe2E=";
   };
+
 
   strictDeps = true;
 
   nativeBuildInputs = [
     desktop-file-utils
+    gettext
     meson
     ninja
     pkg-config
-    python3
-    wrapGAppsHook4
     vala
+    wrapGAppsHook4
   ];
 
   buildInputs = [
     colord
     exiv2
+    giflib
     glib
-    gsettings-desktop-schemas
-    gst_all_1.gst-plugins-base
-    (gst_all_1.gst-plugins-good.override { gtkSupport = true; })
     gst_all_1.gst-libav
     gst_all_1.gst-plugins-bad
+    gst_all_1.gst-plugins-base
+    gst_all_1.gst-plugins-good
+    gst_all_1.gst-plugins-rs # for gtk4paintablesink
     gst_all_1.gst-plugins-ugly
     gtk4
     lcms2
@@ -66,16 +70,14 @@ stdenv.mkDerivation (finalAttrs: {
     libheif
     libjpeg
     libjxl
+    libpng
+    libportal
     libportal-gtk4
     libraw
     librsvg
     libtiff
     libwebp
   ];
-
-  postPatch = ''
-    patchShebangs po/make-potfiles-in.py
-  '';
 
   preFixup = ''
     gappsWrapperArgs+=(--prefix XDG_DATA_DIRS : "${shared-mime-info}/share")
