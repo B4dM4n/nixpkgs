@@ -1,0 +1,13 @@
+diff -ruN a/pbs-client/src/pxar/create.rs b/pbs-client/src/pxar/create.rs
+--- a/pbs-client/src/pxar/create.rs	2026-10-23 12:42:15.342599321 +0200
++++ b/pbs-client/src/pxar/create.rs	2026-10-23 12:42:18.881672312 +0200
+@@ -79,7 +79,8 @@
+     Errno::result(res)?;
+     let fs_stat = unsafe { fs_stat.assume_init() };
+ 
+-    Ok(fs_stat.f_type)
++    // f_type is unsigned on musl
++    Ok(fs_stat.f_type as i64)
+ }
+ 
+ fn strip_ascii_whitespace(line: &[u8]) -> &[u8] {

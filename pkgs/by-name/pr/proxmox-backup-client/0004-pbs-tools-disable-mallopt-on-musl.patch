@@ -1,0 +1,13 @@
+diff -ruN a/pbs-tools/src/lib.rs b/pbs-tools/src/lib.rs
+--- a/pbs-tools/src/lib.rs	2026-10-23 12:33:44.368082640 +0200
++++ b/pbs-tools/src/lib.rs	2026-10-23 12:33:51.392228579 +0200
+@@ -23,6 +23,9 @@
+ /// running backup jobs. We measured a reduction by a factor of 10-20 in experiments and see much
+ /// less erratic behavior in the overall's runtime RSS size.
+ pub fn setup_libc_malloc_opts() {
++    // musl does not provide `mallopt`, and its allocator does not have a dynamic mmap
++    // threshold, so the glibc-specific tuning below is not applicable there.
++    #[cfg(not(target_env = "musl"))]
+     unsafe {
+         libc::mallopt(libc::M_MMAP_THRESHOLD, 4096 * 32);
+     }

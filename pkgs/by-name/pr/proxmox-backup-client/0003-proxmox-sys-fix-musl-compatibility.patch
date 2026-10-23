@@ -1,0 +1,110 @@
+diff -ruN a/proxmox-sys/src/fs/file.rs b/proxmox-sys/src/fs/file.rs
+--- a/proxmox-sys/src/fs/file.rs	2026-10-23 12:25:03.215249335 +0200
++++ b/proxmox-sys/src/fs/file.rs	2026-10-23 12:29:35.831917811 +0200
+@@ -20,6 +20,46 @@
+ 
+ use crate::fs::CreateOptions;
+ 
++// glibc provides a renameat2 wrapper, musl does not. On musl use the raw syscall, which
++// returns -errno on failure instead of -1 with errno set, so convert it accordingly.
++#[cfg(not(target_env = "musl"))]
++unsafe fn renameat2_noreplace(
++    oldpath: *const libc::c_char,
++    newpath: *const libc::c_char,
++) -> Result<i32, Errno> {
++    unsafe {
++        Errno::result(libc::renameat2(
++            libc::AT_FDCWD,
++            oldpath,
++            libc::AT_FDCWD,
++            newpath,
++            libc::RENAME_NOREPLACE,
++        ))
++    }
++}
++
++#[cfg(target_env = "musl")]
++unsafe fn renameat2_noreplace(
++    oldpath: *const libc::c_char,
++    newpath: *const libc::c_char,
++) -> Result<i32, Errno> {
++    let res = unsafe {
++        libc::syscall(
++            libc::SYS_renameat2,
++            libc::AT_FDCWD,
++            oldpath,
++            libc::AT_FDCWD,
++            newpath,
++            libc::RENAME_NOREPLACE,
++        )
++    };
++    if res < 0 {
++        Err(Errno::from_raw((-res) as i32))
++    } else {
++        Ok(res as i32)
++    }
++}
++
+ /// Read the entire contents of a file into a bytes vector
+ ///
+ /// This basically call ``std::fs::read``, but provides more elaborate
+@@ -284,13 +324,7 @@
+     let rename_result = temp_file_name.with_nix_path(|c_file_name| {
+         path.with_nix_path(|new_path| unsafe {
+             // This also works on file systems which don't support hardlinks (eg. vfat)
+-            match Errno::result(libc::renameat2(
+-                libc::AT_FDCWD,
+-                c_file_name.as_ptr(),
+-                libc::AT_FDCWD,
+-                new_path.as_ptr(),
+-                libc::RENAME_NOREPLACE,
+-            )) {
++            match renameat2_noreplace(c_file_name.as_ptr(), new_path.as_ptr()) {
+                 Err(Errno::EINVAL) => (), // dumb file system, try `link`+`unlink`
+                 other => return other,
+             };
+diff -ruN a/proxmox-sys/src/fs/mod.rs b/proxmox-sys/src/fs/mod.rs
+--- a/proxmox-sys/src/fs/mod.rs	2026-10-23 12:25:03.218249397 +0200
++++ b/proxmox-sys/src/fs/mod.rs	2026-10-23 12:25:13.505463382 +0200
+@@ -170,7 +170,7 @@
+         available: stat.f_bavail * block_size,
+         total_inodes: stat.f_files,
+         free_inodes: stat.f_ffree,
+-        fs_type: stat.f_type,
++        fs_type: stat.f_type as i64,
+         fs_id: stat.f_fsid,
+     })
+ }
+diff -ruN a/proxmox-sys/src/linux/timer.rs b/proxmox-sys/src/linux/timer.rs
+--- a/proxmox-sys/src/linux/timer.rs	2026-10-23 12:25:03.223249501 +0200
++++ b/proxmox-sys/src/linux/timer.rs	2026-10-23 12:25:23.792677359 +0200
+@@ -9,6 +9,14 @@
+ 
+ use libc::{c_int, clockid_t, pid_t};
+ 
++// The libc crate does not expose SIGEV_THREAD_ID for musl targets, although musl defines it
++// with the same value (4) as glibc and passes it straight through to the kernel in
++// timer_create(3).
++#[cfg(target_env = "musl")]
++const SIGEV_THREAD_ID: c_int = 4;
++#[cfg(not(target_env = "musl"))]
++use libc::SIGEV_THREAD_ID;
++
+ /// Timers can use various clocks. See `timer_create(2)`.
+ pub enum Clock {
+     /// Use `CLOCK_REALTIME` for the timer.
+@@ -180,12 +188,12 @@
+             }
+             TimerEvent::ThreadSignal(tid, signo) => {
+                 ev.sigev_signo = signo.0;
+-                ev.sigev_notify = libc::SIGEV_THREAD_ID;
++                ev.sigev_notify = SIGEV_THREAD_ID;
+                 ev.sigev_notify_thread_id = tid.0;
+             }
+             TimerEvent::ThisThreadSignal(signo) => {
+                 ev.sigev_signo = signo.0;
+-                ev.sigev_notify = libc::SIGEV_THREAD_ID;
++                ev.sigev_notify = SIGEV_THREAD_ID;
+                 ev.sigev_notify_thread_id = gettid().0;
+             }
+         }

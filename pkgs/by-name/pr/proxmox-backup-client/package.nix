@@ -65,6 +65,13 @@ rustPlatform.buildRustPackage {
 
   sourceRoot = proxmox-backup_src.name;
 
+  patches = [
+    # pbs-tools' setup_libc_malloc_opts() uses glibc's mallopt(), which musl does not provide.
+    ./0004-pbs-tools-disable-mallopt-on-musl.patch
+    # statfs.f_type is unsigned on musl.
+    ./0005-pbs-client-fix-f_type-on-musl.patch
+  ];
+
   # These patches are essentially un-upstreamable, due to being "workarounds" related to the
   # project structure and upstream/Debian-specific packaging.
   cargoPatches = [
@@ -80,6 +87,16 @@ rustPlatform.buildRustPackage {
   postPatch = ''
     cp ${./Cargo.lock} Cargo.lock
     rm .cargo/config.toml
+
+    # proxmox-fuse's build script hardcodes a `pkgconf` binary, which does not exist in
+    # cross builds (like pkgsStatic), where the pkgconf wrapper only provides a
+    # target-prefixed binary. Respect the PKG_CONFIG variable set by its setup hook instead.
+    substituteInPlace ../proxmox-fuse/build.rs \
+      --replace-fail 'Command::new("pkgconf")' 'Command::new(env::var("PKG_CONFIG").unwrap_or("pkgconf".into()))'
+
+    # fix musl compatibility issues in proxmox-sys (renameat2, SIGEV_THREAD_ID, statfs64)
+    chmod -R u+w ../proxmox
+    patch -p1 -d ../proxmox < ${./0003-proxmox-sys-fix-musl-compatibility.patch}
 
     # avoid some unnecessary dependencies, stemming from greedy linkage by rustc
     # see also upstream Makefile for similar workaround
