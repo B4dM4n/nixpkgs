@@ -1,0 +1,9 @@
+{
+  "authentik": {
+    "version": "2026.8.5",
+    "hash": "sha256-gdhGKCfsMUrWyFnf5TaaHM2ZQ1WYgTLOgGg4DlCaUHU="
+  },
+  "coreCargoHash": "sha256-dRsfsMH36xICg3WimQz3HX/Qgyt0dve/mvG7QERFzpo=",
+  "serverVendorHash": "sha256-iFcZo1ZeIAKu58/5YTNyN3H47jGdmD+pLcJCqEe50Zo=",
+  "webuiPnpmHash": "sha256-KgS6uCZGe/9QUkTtvUgk8ZXnaAcCYxQMb8pumluA9kY="
+}
